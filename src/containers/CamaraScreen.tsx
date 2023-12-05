@@ -33,7 +33,7 @@ export default function CamaraScreen({ navigation }: any) {
     console.log("recarga cam");
   }, []);
 
-  if (!permission) {
+  if (!permission?.granted) {
     return (
       <View
         style={{
