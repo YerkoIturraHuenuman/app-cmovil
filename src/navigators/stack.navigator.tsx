@@ -9,6 +9,7 @@ import CamaraScreen from "../containers/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../screens/AuthScreen";
+import { VariablesContextProvider } from "../contexts/VariablesContext";
 
 export function LogoTitle() {
   return (
@@ -27,68 +28,71 @@ export default function StackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerTransparent: true,
-      }}
-    >
-      <Stack.Screen
-        name="Auth"
-        component={AuthScreen}
-        options={{
-          headerTitle: "",
+    <VariablesContextProvider>
+      <Stack.Navigator
+        screenOptions={{
+          headerTransparent: true,
         }}
-      />
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{
-          header: () => (
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                backgroundColor: "transparent",
-                top: 30,
-              }}
-            >
-              <LogoTitle />
-            </View>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="CamaraScreen"
-        component={CamaraScreen}
-        options={{
-          headerTitle: "",
-          headerTintColor: "#fff",
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <FontAwesomeIcon icon={faChevronLeft} size={25} color="#fff" />
-            </Pressable>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="PrePost"
-        component={PrePost}
-        options={{
-          header: () => (
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                backgroundColor: "transparent",
-                top: 30,
-              }}
-            >
-              <LogoTitle />
-            </View>
-          ),
-        }}
-      />
-    </Stack.Navigator>
+      >
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{
+            headerTitle: "",
+          }}
+        />
+
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            header: () => (
+              <View
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  backgroundColor: "transparent",
+                  top: 30,
+                }}
+              >
+                <LogoTitle />
+              </View>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="CamaraScreen"
+          component={CamaraScreen}
+          options={{
+            headerTitle: "",
+            headerTintColor: "#fff",
+            headerLeft: () => (
+              <Pressable onPress={() => navigation.goBack()}>
+                <FontAwesomeIcon icon={faChevronLeft} size={25} color="#fff" />
+              </Pressable>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="PrePost"
+          component={PrePost}
+          options={{
+            header: () => (
+              <View
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  backgroundColor: "transparent",
+                  top: 30,
+                }}
+              >
+                <LogoTitle />
+              </View>
+            ),
+          }}
+        />
+      </Stack.Navigator>
+    </VariablesContextProvider>
   );
 }
 const styles = StyleSheet.create({

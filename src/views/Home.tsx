@@ -1,150 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, createContext, useContext } from "react";
+import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-  Modal,
-  Pressable,
-} from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
-import * as Location from "expo-location";
-
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-
+import Publicacion from "../containers/Publicacion";
+import ModalMap from "../containers/ModalMap";
 //--------------------------------------------------------------------------------------
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const [modalVisible, setModalVisible] = useState(false);
-  const [location, setLocation] = useState<any>(null);
-  const [address, setAdress] = useState<any>(null);
+  const { modalVisible, setModalVisible } = useVariablesContext();
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
   useEffect(
     () =>
-      navigation.addListener(
-        "focus",
-        () => {
-          console.log("home");
-        },
-        (async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== "granted") {
-            return;
-          }
-
-          let location: any = await Location.getCurrentPositionAsync({});
-          let address = await Location.reverseGeocodeAsync(location.coords);
-          setAdress(
-            `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
-          );
-          setLocation(location);
-        })()
-      ),
+      navigation.addListener("focus", () => {
+        console.log("home");
+      }),
     [, navigation]
   );
   //------------------------PROCESOS--------------------------
-  const handleCamara = () => {
-    navigation.navigate("CamaraScreen");
-  };
-  console.log(address);
+
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
-        <View style={styles.headerPublicacion}>
-          <Image
-            source={require("../../assets/bass/fotoPerfil1.jpg")}
-            style={styles.fotoPerfil}
-          />
-          <Text style={styles.nombreUserPublicacion}>Maria Gonazales</Text>
-        </View>
-        <Image
-          source={require("../../assets/bass/fotoPublicacion.jpg")}
-          style={styles.fotoPublicacion}
-        />
-        <View style={styles.footerPublicacion}>
-          <View style={{}}>
-            <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
-          </View>
-          <Text style={styles.textUbicacion}>
-            C. Dr. Sotero del Rio 1241-1201, La Florida, Región Metropolitana
-          </Text>
-          <TouchableOpacity
-            style={styles.botonMapa}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>Mapa</Text>
-          </TouchableOpacity>
-        </View>
-        <Text
-          style={{
-            marginHorizontal: 20,
-            marginTop: 10,
-            color: "#777777",
-            fontSize: 12,
-          }}
-        >
-          Hace 2 horas
-        </Text>
+        <Publicacion setModalVisible={setModalVisible} />
       </View>
       <View style={styles.contenedorBotonesPrincipales}>
-        <TouchableOpacity onPress={handleCamara} style={styles.botonMas}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("CamaraScreen")}
+          style={styles.botonMas}
+        >
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            ></Pressable>
-            <MapView
-              region={
-                location && location.coords
-                  ? {
-                      latitude: location.coords.latitude,
-                      longitude: location.coords.longitude,
-                      latitudeDelta: 0.01,
-                      longitudeDelta: 0.01,
-                    }
-                  : undefined
-              }
-              style={styles.map}
-            >
-              {location && (
-                <Marker
-                  coordinate={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                  }}
-                >
-                  <Callout tooltip style={{}}>
-                    <View style={{ maxWidth: 300 }}>
-                      <View style={styles.popperMarca}>
-                        <Text>{address}</Text>
-                      </View>
-                    </View>
-                  </Callout>
-                </Marker>
-              )}
-            </MapView>
-          </View>
-        </View>
-      </Modal>
+      <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />
     </View>
   );
 }
