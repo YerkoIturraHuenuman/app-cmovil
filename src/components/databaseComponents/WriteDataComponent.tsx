@@ -1,25 +1,19 @@
-import React from 'react';
-import { Button } from 'react-native';
-import { writeUserData } from '../../firebase/database';
+import React from "react";
+import { Button } from "react-native";
+import { writeUserData } from "../../firebase/database";
 
-export const WriteDataComponent = () => {
-
-    const user = {
-        usario505: {
-            name: 'test',
-            email: 'jamon'
-        }
-    }
-
-    const handlerSaveData = () => {
-        writeUserData(user)
-    }
-
-    return (
-        <Button
-            onPress={handlerSaveData}
-            title="Guardar datos"
-            color="#841584"
-        />
-    )
+export const WriteDataComponent = (
+  userID: string | null,
+  userEmail: string | null
+) => {
+  const id_random = `usuario_${getRandomNumber()}`;
+  const user = {
+    [userID ? userID : id_random]: {
+      email: userEmail,
+    },
+  };
+  writeUserData(user);
+};
+function getRandomNumber(): number {
+  return Math.floor(Math.random() * 100) + 1;
 }

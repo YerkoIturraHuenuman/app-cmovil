@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Camera, CameraType, FlashMode } from "expo-camera";
+import * as Location from "expo-location";
+
 import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
@@ -13,7 +15,6 @@ export default function CamaraScreen({ navigation }: any) {
   const [flash, setFlash] = useState(FlashMode.off);
   const camaraRef = useRef<any>(null);
   const [image, setImage] = useState(null);
-
   const [permission, requestPermission] = Camera.useCameraPermissions();
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const tomarFoto = async () => {
@@ -30,6 +31,12 @@ export default function CamaraScreen({ navigation }: any) {
     if (!permission && camaraRef.current) {
       camaraRef.current.resumePreview();
     }
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        navigation.navigate("Home");
+      }
+    })();
     console.log("recarga cam");
   }, []);
 

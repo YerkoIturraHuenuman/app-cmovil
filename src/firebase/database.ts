@@ -1,18 +1,26 @@
 import { database } from "./firebaseConfig";
-import { ref, set, onValue } from "firebase/database";
+import { ref, set,update,get, onValue } from "firebase/database";
 
-const userRef = ref(database, "users/usuario23");
+const userRef = ref(database, "usuarios");
 
-const writeUserData = (data: any) => {
-  return set(userRef, data);
+const writeUserData = async(data: any) => {
+  const snapshot = await get(userRef);
+
+  if (snapshot.exists()) {
+    return update(userRef, data);
+  } else {
+    return set(userRef, data);
+  }
 };
 
 const readUserData = () => {
-  onValue(userRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log('====================')
-    console.log('DATA en RDB')
-    console.log(data);
+  return new Promise((resolve, reject) => {
+    onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      resolve(data);
+    }, (error) => {
+      reject(error);
+    });
   });
 };
 

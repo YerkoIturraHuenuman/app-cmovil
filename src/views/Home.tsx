@@ -1,4 +1,4 @@
-import React, { useEffect, createContext, useContext } from "react";
+import React, { useEffect, createContext, useContext, useState } from "react";
 import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
 import { View, StyleSheet, TouchableOpacity } from "react-native";
@@ -6,22 +6,31 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import Publicacion from "../containers/Publicacion";
 import ModalMap from "../containers/ModalMap";
+
+import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
+import { readUserData } from "../firebase/database";
+
 //--------------------------------------------------------------------------------------
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
   const { modalVisible, setModalVisible } = useVariablesContext();
-
+  const [usuarios, setUsuarios] = useState<unknown>([]);
   //------------------------FUNCIONES PRINCIPALES--------------------------
+  const getUsuarios = async () => {
+    const users = await readUserData();
+    setUsuarios(users);
+  };
+  //------------------------PROCESOS--------------------------
   useEffect(
     () =>
       navigation.addListener("focus", () => {
         console.log("home");
+        getUsuarios();
       }),
     [, navigation]
   );
-  //------------------------PROCESOS--------------------------
-
+  console.log("usuraios: ", usuarios);
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>

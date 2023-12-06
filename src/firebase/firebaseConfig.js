@@ -23,6 +23,7 @@ const firebaseConfig = {
   storageBucket: "app-cmovil.appspot.com",
   messagingSenderId: "1063934609160",
   appId: "1:1063934609160:web:43da0b7c60b1aedc598ebd",
+  databaseURL: "https://app-cmovil-default-rtdb.firebaseio.com/",
 };
 
 const app = initializeApp(firebaseConfig);

@@ -30,13 +30,14 @@ export default function PrePost({ navigation }: any) {
           if (status !== "granted") {
             return;
           }
-
           let location: any = await Location.getCurrentPositionAsync({});
           let address = await Location.reverseGeocodeAsync(location.coords);
           setAdress(
             `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
           );
           setLocation(location);
+          //funcionSaveCoords(address[0], id_user) AQUI FUNCION PARA GUARDAR LAS COORDENADAS DEL USUARIO EN FIREBASE
+          console.log("address", address);
         })()
       ),
     [, navigation]

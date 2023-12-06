@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Animated,
 } from "react-native";
+import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
 import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -19,6 +20,7 @@ interface IError {
 }
 
 export const Auth = (props: any) => {
+  //--------------------------------------SET GENERALES--------------------------------------
   const [title, setTitle] = useState("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState("Login");
   const [email, setEmail] = useState("");
@@ -29,7 +31,16 @@ export const Auth = (props: any) => {
   const [mensaje, setMensaje] = useState<string | undefined>(undefined);
   const animation = useRef(new Animated.Value(0)).current;
   const [toggle, setToggle] = useState(false);
+  const translateY = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 20, 0],
+  });
 
+  const opacity = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 1],
+  });
+  //--------------------------------------PROCEDIMIENTOS--------------------------------------
   const handlerRegister = async () => {
     setLoading(true);
     setError(undefined);
@@ -37,6 +48,7 @@ export const Auth = (props: any) => {
 
     const user = await signIn(email, password);
     if (user) {
+      WriteDataComponent(user.uid, user.email);
       setLoading(false);
       setTitle("Inicio Sesión");
       setTitleBoton("Login");
@@ -83,15 +95,7 @@ export const Auth = (props: any) => {
     ]).start();
   }, [toggle]);
 
-  const translateY = animation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 20, 0],
-  });
-
-  const opacity = animation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 0, 1],
-  });
+  //------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -122,13 +126,17 @@ export const Auth = (props: any) => {
             value={email}
             style={styles.input}
             keyboardType="email-address"
+            caretHidden={false}
+            selectionColor={"#34c400bb"}
           />
           <TextInput
             placeholder="Ingrese Password"
             onChangeText={setPassword}
             value={password}
             style={styles.input}
+            caretHidden={false}
             secureTextEntry
+            selectionColor={"#34c400bb"}
           />
           {error ? (
             <Text style={{ width: "100%", marginBottom: 20, color: "#cd0a0a" }}>
@@ -154,7 +162,7 @@ export const Auth = (props: any) => {
           <TouchableOpacity
             onPress={handlerLoginGoogle}
             style={{
-              borderWidth: 2,
+              borderWidth: 0,
               borderColor: "#00c503",
               borderRadius: 50,
               marginTop: 40,
@@ -163,13 +171,14 @@ export const Auth = (props: any) => {
               flexDirection: "row",
               alignItems: "center",
             }}
+            disabled={true}
           >
             <FontAwesomeIcon
               icon={faGoogle}
               style={{ marginRight: 10 }}
-              color="#00c503"
+              color="#bdbdbd"
             />
-            <Text style={{ color: "#00c503", fontWeight: "400", fontSize: 16 }}>
+            <Text style={{ color: "#bdbdbd", fontWeight: "400", fontSize: 16 }}>
               Inicia Sesión con Google
             </Text>
           </TouchableOpacity>

@@ -28,8 +28,8 @@ export default function ModalMap({ modalVisible, setModalVisible }: any) {
         `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
       );
       setLocation(location);
+      console.log("abrir modal");
     })();
-    console.log("abrir modal");
   }, []);
   return (
     <Modal
