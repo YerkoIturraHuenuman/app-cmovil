@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   TextInput,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Text,
   ImageBackground,
   Image,
+  Animated,
 } from "react-native";
 import { logIn } from "../firebase/auth";
 
@@ -25,23 +26,30 @@ interface IError {
 export const Auth = (props: any) => {
   const [title, setTitle] = useState("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState("Login");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [correctData, setCorrectData] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [mensaje, setMensaje] = useState<string | undefined>(undefined);
+  const animation = useRef(new Animated.Value(0)).current;
+  const [toggle, setToggle] = useState(false);
 
   const handlerRegister = async () => {
     setLoading(true);
     setError(undefined);
+    setMensaje(undefined);
+
     const user = await signIn(email, password);
     if (user) {
       setLoading(false);
-
+      setTitle("Inicio Sesión");
+      setTitleBoton("Login");
+      setMensaje("Usuario creado, inicia sesión");
+      setToggle(!toggle);
       return true;
     } else {
-      // TODO: manejar el error
+      setError("Usuario ya está registrado!");
       setLoading(false);
       return false;
     }
@@ -49,6 +57,8 @@ export const Auth = (props: any) => {
   const handlerLogin = async () => {
     setLoading(true);
     setError(undefined);
+    setMensaje(undefined);
+
     const successRegister = await logIn(email, password);
     if (successRegister) {
       setLoading(false);
@@ -67,6 +77,25 @@ export const Auth = (props: any) => {
     }
   }, [email, password]);
 
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(animation, {
+        toValue: toggle ? 1 : 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [toggle]);
+
+  const translateY = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 20, 0],
+  });
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 1],
+  });
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -74,7 +103,13 @@ export const Auth = (props: any) => {
         style={styles.fondoImage}
         resizeMode="cover"
       >
-        <View style={styles.contenedorForm}>
+        <Animated.View
+          style={[
+            styles.contenedorForm,
+            { opacity },
+            { transform: [{ translateY }] },
+          ]}
+        >
           <Text
             style={{
               fontSize: 30,
@@ -104,6 +139,9 @@ export const Auth = (props: any) => {
               {error}
             </Text>
           ) : null}
+          {mensaje ? (
+            <Text style={{ width: "100%", marginBottom: 20 }}>{mensaje}</Text>
+          ) : null}
           <TouchableOpacity
             onPress={titleBoton === "Login" ? handlerLogin : handlerRegister}
           >
@@ -126,19 +164,26 @@ export const Auth = (props: any) => {
               flexDirection: "row",
             }}
           >
-            <Text>No tienes cuenta?, </Text>
+            {titleBoton === "Login" ? <Text>No tienes cuenta?, </Text> : null}
             <TouchableOpacity
               onPress={() => {
-                setTitle("Registro");
-                setTitleBoton("Enviar");
+                if (titleBoton === "Login") {
+                  setTitle("Registro");
+                  setTitleBoton("Enviar");
+                } else if (titleBoton === "Enviar") {
+                  setTitle("Inicio Sesión");
+                  setTitleBoton("Login");
+                }
+                setError(undefined);
+                setToggle(!toggle);
               }}
             >
               <Text style={{ fontWeight: "bold", color: "#04d408" }}>
-                Registrate Aquí
+                {titleBoton === "Login" ? "Registrate Aquí" : "Inicia Sesión"}
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </ImageBackground>
     </View>
   );
@@ -150,7 +195,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   contenedorForm: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     alignItems: "center",
     marginHorizontal: 30,
     borderRadius: 30,
