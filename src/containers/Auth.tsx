@@ -3,20 +3,15 @@ import {
   TextInput,
   StyleSheet,
   View,
-  Button,
   TouchableOpacity,
   Text,
   ImageBackground,
-  Image,
   Animated,
 } from "react-native";
-import { logIn } from "../firebase/auth";
-
+import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
-import { LinearTextGradient } from "react-native-text-gradient";
-
-import { signIn } from "../firebase/auth";
-import { faD } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 interface IError {
   code: string;
@@ -69,6 +64,7 @@ export const Auth = (props: any) => {
       setLoading(false);
     }
   };
+  const handlerLoginGoogle = () => {};
   useEffect(() => {
     if (email !== "" && password !== "") {
       setCorrectData(false);
@@ -155,10 +151,31 @@ export const Auth = (props: any) => {
               </Text>
             </LinearGradient>
           </TouchableOpacity>
-
+          <TouchableOpacity
+            onPress={handlerLoginGoogle}
+            style={{
+              borderWidth: 2,
+              borderColor: "#00c503",
+              borderRadius: 50,
+              marginTop: 40,
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faGoogle}
+              style={{ marginRight: 10 }}
+              color="#00c503"
+            />
+            <Text style={{ color: "#00c503", fontWeight: "400", fontSize: 16 }}>
+              Inicia Sesión con Google
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
-              marginTop: 40,
+              marginTop: 10,
               width: "100%",
               justifyContent: "center",
               flexDirection: "row",
@@ -202,7 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingBottom: 25,
     paddingTop: 40,
-    marginTop: 90,
+    marginTop: 150,
     // Sombras para Android
     elevation: 10,
     // Sombras para iOS
