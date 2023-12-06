@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   TextInput,
   StyleSheet,
   View,
-  Button,
   TouchableOpacity,
   Text,
   ImageBackground,
-  Image,
+  Animated,
 } from "react-native";
-import { logIn } from "../firebase/auth";
-
+import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
+import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
-import { LinearTextGradient } from "react-native-text-gradient";
-
-import { signIn } from "../firebase/auth";
-import { faD } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 interface IError {
   code: string;
@@ -23,25 +20,43 @@ interface IError {
 }
 
 export const Auth = (props: any) => {
+  //--------------------------------------SET GENERALES--------------------------------------
   const [title, setTitle] = useState("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState("Login");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [correctData, setCorrectData] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [mensaje, setMensaje] = useState<string | undefined>(undefined);
+  const animation = useRef(new Animated.Value(0)).current;
+  const [toggle, setToggle] = useState(false);
+  const translateY = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 20, 0],
+  });
 
+  const opacity = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 1],
+  });
+  //--------------------------------------PROCEDIMIENTOS--------------------------------------
   const handlerRegister = async () => {
     setLoading(true);
     setError(undefined);
+    setMensaje(undefined);
+
     const user = await signIn(email, password);
     if (user) {
+      WriteDataComponent(user.uid, user.email);
       setLoading(false);
-
+      setTitle("Inicio Sesión");
+      setTitleBoton("Login");
+      setMensaje("Usuario creado, inicia sesión");
+      setToggle(!toggle);
       return true;
     } else {
-      // TODO: manejar el error
+      setError("Usuario ya está registrado!");
       setLoading(false);
       return false;
     }
@@ -49,6 +64,8 @@ export const Auth = (props: any) => {
   const handlerLogin = async () => {
     setLoading(true);
     setError(undefined);
+    setMensaje(undefined);
+
     const successRegister = await logIn(email, password);
     if (successRegister) {
       setLoading(false);
@@ -59,6 +76,7 @@ export const Auth = (props: any) => {
       setLoading(false);
     }
   };
+  const handlerLoginGoogle = () => {};
   useEffect(() => {
     if (email !== "" && password !== "") {
       setCorrectData(false);
@@ -67,6 +85,17 @@ export const Auth = (props: any) => {
     }
   }, [email, password]);
 
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(animation, {
+        toValue: toggle ? 1 : 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [toggle]);
+
+  //------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -74,7 +103,13 @@ export const Auth = (props: any) => {
         style={styles.fondoImage}
         resizeMode="cover"
       >
-        <View style={styles.contenedorForm}>
+        <Animated.View
+          style={[
+            styles.contenedorForm,
+            { opacity },
+            { transform: [{ translateY }] },
+          ]}
+        >
           <Text
             style={{
               fontSize: 30,
@@ -91,18 +126,25 @@ export const Auth = (props: any) => {
             value={email}
             style={styles.input}
             keyboardType="email-address"
+            caretHidden={false}
+            selectionColor={"#34c400bb"}
           />
           <TextInput
             placeholder="Ingrese Password"
             onChangeText={setPassword}
             value={password}
             style={styles.input}
+            caretHidden={false}
             secureTextEntry
+            selectionColor={"#34c400bb"}
           />
           {error ? (
             <Text style={{ width: "100%", marginBottom: 20, color: "#cd0a0a" }}>
               {error}
             </Text>
+          ) : null}
+          {mensaje ? (
+            <Text style={{ width: "100%", marginBottom: 20 }}>{mensaje}</Text>
           ) : null}
           <TouchableOpacity
             onPress={titleBoton === "Login" ? handlerLogin : handlerRegister}
@@ -117,28 +159,57 @@ export const Auth = (props: any) => {
               </Text>
             </LinearGradient>
           </TouchableOpacity>
-
+          <TouchableOpacity
+            onPress={handlerLoginGoogle}
+            style={{
+              borderWidth: 0,
+              borderColor: "#00c503",
+              borderRadius: 50,
+              marginTop: 40,
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+            disabled={true}
+          >
+            <FontAwesomeIcon
+              icon={faGoogle}
+              style={{ marginRight: 10 }}
+              color="#bdbdbd"
+            />
+            <Text style={{ color: "#bdbdbd", fontWeight: "400", fontSize: 16 }}>
+              Inicia Sesión con Google
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
-              marginTop: 40,
+              marginTop: 10,
               width: "100%",
               justifyContent: "center",
               flexDirection: "row",
             }}
           >
-            <Text>No tienes cuenta?, </Text>
+            {titleBoton === "Login" ? <Text>No tienes cuenta?, </Text> : null}
             <TouchableOpacity
               onPress={() => {
-                setTitle("Registro");
-                setTitleBoton("Enviar");
+                if (titleBoton === "Login") {
+                  setTitle("Registro");
+                  setTitleBoton("Enviar");
+                } else if (titleBoton === "Enviar") {
+                  setTitle("Inicio Sesión");
+                  setTitleBoton("Login");
+                }
+                setError(undefined);
+                setToggle(!toggle);
               }}
             >
               <Text style={{ fontWeight: "bold", color: "#04d408" }}>
-                Registrate Aquí
+                {titleBoton === "Login" ? "Registrate Aquí" : "Inicia Sesión"}
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </ImageBackground>
     </View>
   );
@@ -150,14 +221,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   contenedorForm: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     alignItems: "center",
     marginHorizontal: 30,
     borderRadius: 30,
     paddingHorizontal: 25,
     paddingBottom: 25,
     paddingTop: 40,
-    marginTop: 90,
+    marginTop: 150,
     // Sombras para Android
     elevation: 10,
     // Sombras para iOS
