@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "100%",
     height: 400,
+    opacity: 0.2,
   },
   footerPublicacion: {
     paddingHorizontal: 15,

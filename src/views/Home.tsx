@@ -1,7 +1,13 @@
 import React, { useEffect, createContext, useContext, useState } from "react";
 import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import Publicacion from "../containers/Publicacion";
@@ -11,11 +17,13 @@ import { ReadDataComponent } from "../components/databaseComponents/ReadDataComp
 import { readUserData } from "../firebase/database";
 
 //--------------------------------------------------------------------------------------
+const screenHeight = Dimensions.get("window").height;
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
   const { modalVisible, setModalVisible } = useVariablesContext();
-  const [usuarios, setUsuarios] = useState<unknown>([]);
+  const [usuarios, setUsuarios] = useState<any>([]);
+
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const getUsuarios = async () => {
     const users = await readUserData();
@@ -30,13 +38,27 @@ export default function Home({ navigation }: any) {
       }),
     [, navigation]
   );
-  console.log("usuraios: ", usuarios);
+  if (usuarios !== null) {
+    for (let key in usuarios) {
+      if (usuarios.hasOwnProperty(key)) {
+        console.log(key);
+
+        console.log(usuarios[key].email);
+      }
+    }
+  }
+
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
-        <Publicacion setModalVisible={setModalVisible} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {Object.keys(usuarios).map((key) => (
+            <Publicacion key={key} setModalVisible={setModalVisible} />
+          ))}
+        </ScrollView>
       </View>
-      <View style={styles.contenedorBotonesPrincipales}>
+
+      {/*<View style={styles.contenedorBotonesPrincipales}>
         <TouchableOpacity
           onPress={() => navigation.navigate("CamaraScreen")}
           style={styles.botonMas}
@@ -44,22 +66,21 @@ export default function Home({ navigation }: any) {
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-      <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />
+        <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />*/}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    paddingTop: 110,
     paddingBottom: 78,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     flex: 1,
   },
   contenedorPrincipal: {
-    borderTopWidth: 1,
-    borderTopColor: "#F1F1F1",
-    flex: 1,
+    paddingTop: 90,
+    width: "100%",
+    height: screenHeight,
   },
   headerPublicacion: {
     paddingHorizontal: 15,
