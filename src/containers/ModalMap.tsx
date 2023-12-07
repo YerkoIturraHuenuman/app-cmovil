@@ -37,7 +37,6 @@ export default function ModalMap({ modalVisible, setModalVisible }: any) {
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
         setModalVisible(false);
       }}
     >

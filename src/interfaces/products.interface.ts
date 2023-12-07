@@ -3,3 +3,7 @@ export interface InterUsuario {
   userEmail: string | null;
   coordenadasPublicacion: object | null;
 }
+export interface RespuestaLogin {
+  res: boolean;
+  userID: string;
+}

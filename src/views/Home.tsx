@@ -17,7 +17,6 @@ import { ReadDataComponent } from "../components/databaseComponents/ReadDataComp
 import { readUserData } from "../firebase/database";
 
 //--------------------------------------------------------------------------------------
-const screenHeight = Dimensions.get("window").height;
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
@@ -57,8 +56,7 @@ export default function Home({ navigation }: any) {
           ))}
         </ScrollView>
       </View>
-
-      {/*<View style={styles.contenedorBotonesPrincipales}>
+      <View style={styles.contenedorBotonesPrincipales}>
         <TouchableOpacity
           onPress={() => navigation.navigate("CamaraScreen")}
           style={styles.botonMas}
@@ -66,21 +64,19 @@ export default function Home({ navigation }: any) {
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-        <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />*/}
+      <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    paddingBottom: 78,
     backgroundColor: "#ffffff",
     flex: 1,
   },
   contenedorPrincipal: {
     paddingTop: 90,
-    width: "100%",
-    height: screenHeight,
+    flex: 1,
   },
   headerPublicacion: {
     paddingHorizontal: 15,

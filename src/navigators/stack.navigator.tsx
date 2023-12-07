@@ -58,6 +58,8 @@ export default function StackNavigator() {
                 <LogoTitle />
               </View>
             ),
+            gestureEnabled: false, // Deshabilita los gestos
+            headerLeft: () => null, // Oculta el botón de volver atrás
           }}
         />
         <Stack.Screen

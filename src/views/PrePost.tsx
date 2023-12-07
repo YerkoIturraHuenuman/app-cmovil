@@ -17,78 +17,97 @@ import { useVariablesContext } from "../contexts/VariablesContext";
 export default function PrePost({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
   const { keyUser } = useVariablesContext();
-
   const [location, setLocation] = useState<any>(null);
   const [address, setAdress] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const handlerSumbitPublicacion = () => {
+    console.log("key: ", keyUser);
     const object: InterUsuario = {
       userID: keyUser,
       userEmail: null,
       coordenadasPublicacion: location,
     };
     WriteDataComponent(object, 2);
-
-    return true;
   };
+
   //------------------------PROCESOS--------------------------
-  useEffect(
-    () =>
-      navigation.addListener(
-        "focus",
-        (async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== "granted") {
-            return;
-          }
-          let coordenadas: any = await Location.getCurrentPositionAsync({});
-          let address = await Location.reverseGeocodeAsync(location.coords);
-          setAdress(
-            `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
-          );
-          setLocation(coordenadas.coords);
-          //funcionSaveCoords(address[0], id_user) AQUI FUNCION PARA GUARDAR LAS COORDENADAS DEL USUARIO EN FIREBASE
-          console.log("address", address);
-        })()
-      ),
-    [, navigation]
-  );
+  useEffect(() => {
+    setLoading(true);
+    tomandoLocalizacion();
+  }, []);
+  const tomandoLocalizacion = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("!granted");
+      return;
+    }
+    let coordenadas: any;
+    let address: any;
+    try {
+      console.log("promesas");
+      coordenadas = await Location.getCurrentPositionAsync({});
+      address = await Location.reverseGeocodeAsync(coordenadas.coords);
+      setAdress(
+        `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
+      );
+      setLocation(coordenadas.coords);
+      console.log("address", address);
+      console.log("coords", coordenadas.coords);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const route = useRoute();
   const image = (route.params as { uri?: string })?.uri;
-  return (
-    <View style={styles.contenedorPrincipal}>
-      <Image source={{ uri: image }} style={styles.fotoTomada} />
-      <View style={styles.footerPublicacion}>
-        <View style={{}}>
-          <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+  if (loading)
+    return (
+      <View style={{ flex: 1 }}>
+        <Text>Cargando...</Text>
+      </View>
+    );
+  else if (!loading) {
+    console.log("cargado");
+    return (
+      <View style={styles.contenedorPrincipal}>
+        <Image source={{ uri: image }} style={styles.fotoTomada} />
+        <View style={styles.footerPublicacion}>
+          <View style={{}}>
+            <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+          </View>
+          <Text style={styles.textUbicacion}>{address}</Text>
         </View>
-        <Text style={styles.textUbicacion}>{address}</Text>
-      </View>
-      <View style={styles.contenedorBotones}>
-        <Pressable
-          onPress={() => navigation.navigate("Home")}
-          style={styles.botonCancelar}
-        >
-          <Text
-            style={{
-              color: "#5bee00",
-              fontWeight: "bold",
-              textAlign: "center",
-            }}
+        <View style={styles.contenedorBotones}>
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
+            style={styles.botonCancelar}
           >
-            Cancelar
-          </Text>
-        </Pressable>
-        <TouchableOpacity style={styles.botonSubir}>
-          <Text
-            style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}
+            <Text
+              style={{
+                color: "#5bee00",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Cancelar
+            </Text>
+          </Pressable>
+          <TouchableOpacity
+            onPress={handlerSumbitPublicacion}
+            style={styles.botonSubir}
           >
-            Subir
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}
+            >
+              Subir
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 }
 const styles = StyleSheet.create({
   contenedorPrincipal: {

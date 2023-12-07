@@ -13,7 +13,7 @@ export const WriteDataComponent = (object: InterUsuario, op: number) => {
     };
     writeUserData(user, 1);
   } else if (op === 2) {
-    const id_random = `usuario_${getRandomNumber()}`;
+    const id_random = generarClave();
     const publicacion = {
       userID: object.userID,
       data_publicacion: {
@@ -27,4 +27,13 @@ export const WriteDataComponent = (object: InterUsuario, op: number) => {
 };
 function getRandomNumber(): number {
   return Math.floor(Math.random() * 100) + 1;
+}
+function generarClave(): string {
+  let caracteres =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let clave = "";
+  for (let i = 0; i < 10; i++) {
+    clave += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  }
+  return clave;
 }

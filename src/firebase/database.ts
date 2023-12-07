@@ -18,9 +18,9 @@ const writeUserData = async (data: any, op: number) => {
     const snapshot = await get(userPostRef);
 
     if (snapshot.exists()) {
-      return update(userPostRef, data);
+      return update(userPostRef, data.data_publicacion);
     } else {
-      return set(userPostRef, data);
+      return set(userPostRef, data.data_publicacion);
     }
   }
 };

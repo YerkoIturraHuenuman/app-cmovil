@@ -13,7 +13,7 @@ import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { InterUsuario } from "../interfaces/products.interface";
+import { InterUsuario, RespuestaLogin } from "../interfaces/products.interface";
 import { useVariablesContext } from "../contexts/VariablesContext";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
@@ -53,7 +53,7 @@ export const Auth = (props: any) => {
         userEmail: user.email,
         coordenadasPublicacion: null,
       };
-      setKeyUser(user.uid);
+
       WriteDataComponent(objectUser, 1);
       setLoading(false);
       setTitle("Inicio Sesión");
@@ -72,11 +72,16 @@ export const Auth = (props: any) => {
     setError(undefined);
     setMensaje(undefined);
 
-    const successRegister = await logIn(email, password);
-    if (successRegister) {
+    const successLogin = await logIn(email, password);
+    if (successLogin.res) {
+      setKeyUser(successLogin.userID);
       setLoading(false);
+      console.log("successLogin: ", successLogin.userID);
       props.navigation.navigate("Home");
-      console.log("redirecciona");
+      props.navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     } else {
       setError("Usuario no registrado!");
       setLoading(false);

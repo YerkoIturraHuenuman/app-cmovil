@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
+import { RespuestaLogin } from "../interfaces/products.interface";
 
 const signIn = async (email: string, password: string) => {
   return createUserWithEmailAndPassword(auth, email, password)
@@ -20,11 +21,11 @@ const logIn = async (email: string, password: string) => {
     .then((userCredential) => {
       //console.log("=========");
       //console.log(userCredential.user);
-      return true;
+      return {res: true, userID: userCredential.user.uid};
     })
     .catch((error) => {
-      console.error(error);
-      return false;
+      //console.error(error);
+      return {res: false, userID: ''};
     });
 };
 
