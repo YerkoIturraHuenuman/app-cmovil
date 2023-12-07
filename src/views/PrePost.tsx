@@ -8,41 +8,51 @@ import {
   Pressable,
 } from "react-native";
 import * as Location from "expo-location";
-
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-
 import { useRoute } from "@react-navigation/native";
+import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
+import { InterUsuario } from "../interfaces/products.interface";
+import { useVariablesContext } from "../contexts/VariablesContext";
 export default function PrePost({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
+  const { keyUser } = useVariablesContext();
+
   const [location, setLocation] = useState<any>(null);
   const [address, setAdress] = useState<any>(null);
   //------------------------FUNCIONES PRINCIPALES--------------------------
+  const handlerSumbitPublicacion = () => {
+    const object: InterUsuario = {
+      userID: keyUser,
+      userEmail: null,
+      coordenadasPublicacion: location,
+    };
+    WriteDataComponent(object, 2);
+
+    return true;
+  };
+  //------------------------PROCESOS--------------------------
   useEffect(
     () =>
       navigation.addListener(
         "focus",
-        () => {
-          console.log("home");
-        },
         (async () => {
           let { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== "granted") {
             return;
           }
-          let location: any = await Location.getCurrentPositionAsync({});
+          let coordenadas: any = await Location.getCurrentPositionAsync({});
           let address = await Location.reverseGeocodeAsync(location.coords);
           setAdress(
             `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
           );
-          setLocation(location);
+          setLocation(coordenadas.coords);
           //funcionSaveCoords(address[0], id_user) AQUI FUNCION PARA GUARDAR LAS COORDENADAS DEL USUARIO EN FIREBASE
           console.log("address", address);
         })()
       ),
     [, navigation]
   );
-  //------------------------PROCESOS--------------------------
   const route = useRoute();
   const image = (route.params as { uri?: string })?.uri;
   return (
