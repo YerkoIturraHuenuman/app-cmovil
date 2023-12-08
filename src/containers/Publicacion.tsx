@@ -7,50 +7,75 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+import * as Location from "expo-location";
+
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
-export default function Publicacion({ setModalVisible }: any) {
-  return (
-    <View>
-      <View style={styles.headerPublicacion}>
-        <Image
-          source={require("../../assets/bass/fotoPerfil1.jpg")}
-          style={styles.fotoPerfil}
-        />
-        <Text style={styles.nombreUserPublicacion}>Maria Gonazales</Text>
-      </View>
-      <Image
-        source={require("../../assets/bass/fotoPublicacion.jpg")}
-        style={styles.fotoPublicacion}
-      />
-      <View style={styles.footerPublicacion}>
-        <View style={{}}>
-          <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+export const Publicacion = ({
+  setModalVisible,
+  userName,
+  address,
+  coords,
+  setCoordenadas,
+  imagePost,
+}: any) => {
+  const [direccion, setDireccion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [urlImg, setUrlImg] = useState("");
+
+  if (!loading)
+    return (
+      <View>
+        <View style={styles.headerPublicacion}>
+          <Image
+            source={require("../../assets/bass/fotoPerfil1.jpg")}
+            style={styles.fotoPerfil}
+          />
+          <Text style={styles.nombreUserPublicacion}>{userName}</Text>
         </View>
-        <Text style={styles.textUbicacion}>
-          C. Dr. Sotero del Rio 1241-1201, La Florida, Región Metropolitana
-        </Text>
-        <TouchableOpacity
-          style={styles.botonMapa}
-          onPress={() => setModalVisible(true)}
+        <Image source={{ uri: imagePost }} style={styles.fotoPublicacion} />
+        <View style={styles.footerPublicacion}>
+          <View style={{}}>
+            <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+          </View>
+          <Text style={styles.textUbicacion}>{address}</Text>
+          <TouchableOpacity
+            style={styles.botonMapa}
+            onPress={() => {
+              setCoordenadas(coords);
+              setModalVisible(true);
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>Mapa</Text>
+          </TouchableOpacity>
+        </View>
+        <Text
+          style={{
+            marginHorizontal: 20,
+            marginTop: 10,
+            color: "#777777",
+            fontSize: 12,
+          }}
         >
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>Mapa</Text>
-        </TouchableOpacity>
+          Hace 2 horas
+        </Text>
       </View>
-      <Text
+    );
+  else if (loading)
+    return (
+      <View
         style={{
-          marginHorizontal: 20,
-          marginTop: 10,
-          color: "#777777",
-          fontSize: 12,
+          backgroundColor: "#f7f7f7",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 400,
         }}
       >
-        Hace 2 horas
-      </Text>
-    </View>
-  );
-}
+        <Text>Cargando...</Text>
+      </View>
+    );
+};
 
 const styles = StyleSheet.create({
   headerPublicacion: {
@@ -74,7 +99,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "100%",
     height: 400,
-    opacity: 0.2,
+    opacity: 1,
+    objectFit: "cover",
   },
   footerPublicacion: {
     paddingHorizontal: 15,

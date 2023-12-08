@@ -1,3 +1,4 @@
+import { Usuarios } from "../interfaces/products.interface";
 import { database } from "./firebaseConfig";
 import { ref, set, update, get, onValue } from "firebase/database";
 

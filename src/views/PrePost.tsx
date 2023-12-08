@@ -7,61 +7,85 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import * as Location from "expo-location";
+import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
+import { writeData } from "../firebase/storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useRoute } from "@react-navigation/native";
-import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
-import { InterUsuario } from "../interfaces/products.interface";
+import { InterDataImg, InterUsuario } from "../interfaces/products.interface";
 import { useVariablesContext } from "../contexts/VariablesContext";
+
 export default function PrePost({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
+  const route = useRoute();
+  const image = (route.params as { uri?: string })?.uri || "";
+  const address = (route.params as { address?: string })?.address || "";
+  const coords = (route.params as { coords?: string })?.coords || "";
+
   const { keyUser } = useVariablesContext();
-  const [location, setLocation] = useState<any>(null);
-  const [address, setAdress] = useState<any>(null);
+  //const [location, setLocation] = useState<any>(null);
+  //const [address, setAdress] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
-  const handlerSumbitPublicacion = () => {
-    console.log("key: ", keyUser);
-    const object: InterUsuario = {
-      userID: keyUser,
-      userEmail: null,
-      coordenadasPublicacion: location,
-    };
-    WriteDataComponent(object, 2);
+  const handleGuardarEnBaseDeDatos = async () => {
+    /*try {
+      const clave = generarClave();
+      //const base64Image = (await convertirURIABase64(image)) as string;
+      const object2: InterDataImg = {
+        userID: keyUser,
+        PublicacionID: clave,
+        img: image,
+      };
+      const res_url = await writeData(object2);
+      console.log("res_url: ", res_url);
+      const object: InterUsuario = {
+        userID: keyUser,
+        userEmail: null,
+        PublicacionID: clave,
+        direccion: address,
+        coordenadasPublicacion: coords,
+        url_img: res_url,
+      };
+      const res = await WriteDataComponent(object, 2);
+    } catch (error) {
+      console.error("Error al guardar en la base de datos:", error);
+    }*/
   };
-
   //------------------------PROCESOS--------------------------
   useEffect(() => {
-    setLoading(true);
-    tomandoLocalizacion();
+    //setLoading(true);
   }, []);
-  const tomandoLocalizacion = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("!granted");
-      return;
-    }
-    let coordenadas: any;
-    let address: any;
+  console.log("variables pasadas: ", coords);
+  const convertirURIABase64 = async (uri: string) => {
     try {
-      console.log("promesas");
-      coordenadas = await Location.getCurrentPositionAsync({});
-      address = await Location.reverseGeocodeAsync(coordenadas.coords);
-      setAdress(
-        `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
-      );
-      setLocation(coordenadas.coords);
-      console.log("address", address);
-      console.log("coords", coordenadas.coords);
-      setLoading(false);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          if (reader.result) {
+            resolve(reader.result.toString());
+          }
+        };
+        reader.readAsDataURL(blob);
+      });
+      return base64;
     } catch (error) {
-      console.error(error);
+      console.error("Error al convertir la imagen a base64:", error);
+      throw error;
     }
   };
-  const route = useRoute();
-  const image = (route.params as { uri?: string })?.uri;
+  const generarClave = () => {
+    let caracteres =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let clave = "";
+    for (let i = 0; i < 10; i++) {
+      clave += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return clave;
+  };
   if (loading)
     return (
       <View style={{ flex: 1 }}>
@@ -95,7 +119,7 @@ export default function PrePost({ navigation }: any) {
             </Text>
           </Pressable>
           <TouchableOpacity
-            onPress={handlerSumbitPublicacion}
+            onPress={handleGuardarEnBaseDeDatos}
             style={styles.botonSubir}
           >
             <Text

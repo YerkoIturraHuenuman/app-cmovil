@@ -7,26 +7,51 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
+  Text,
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import Publicacion from "../containers/Publicacion";
+import { Publicacion } from "../containers/Publicacion";
 import ModalMap from "../containers/ModalMap";
 
 import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
 import { readUserData } from "../firebase/database";
+import { Usuario, Usuarios } from "../interfaces/products.interface";
 
 //--------------------------------------------------------------------------------------
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const { modalVisible, setModalVisible } = useVariablesContext();
-  const [usuarios, setUsuarios] = useState<any>([]);
+  const { modalVisible, setModalVisible, coordenadas, setCoordenadas } =
+    useVariablesContext();
+  const [publicaciones, setPublicaciones] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const getUsuarios = async () => {
-    const users = await readUserData();
-    setUsuarios(users);
+    setLoading(true);
+    const res: any = await readUserData();
+    if (res) {
+      //console.log("res se ha resuelto");
+      //console.log("res: ", res);
+      const usuariosConPublicaciones = Object.values(res).filter(
+        (usuario: any) => usuario.publicaciones
+      );
+      let resultado: any = [];
+      usuariosConPublicaciones.forEach((usuario: any) => {
+        Object.values(usuario.publicaciones).forEach((publicacion: any) => {
+          //console.log(publicacion);
+          resultado.push({
+            email: usuario.email,
+            direccion: publicacion.direccion,
+            coordenadas: publicacion.coordenada,
+            url_image: publicacion.url_img,
+          });
+        });
+      });
+      setPublicaciones(resultado);
+    }
+    setLoading(false);
   };
   //------------------------PROCESOS--------------------------
   useEffect(
@@ -37,22 +62,21 @@ export default function Home({ navigation }: any) {
       }),
     [, navigation]
   );
-  if (usuarios !== null) {
-    for (let key in usuarios) {
-      if (usuarios.hasOwnProperty(key)) {
-        console.log(key);
-
-        console.log(usuarios[key].email);
-      }
-    }
-  }
-
+  //console.log(publicaciones);
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {Object.keys(usuarios).map((key) => (
-            <Publicacion key={key} setModalVisible={setModalVisible} />
+          {publicaciones.map((publicacion: any, index: number) => (
+            <Publicacion
+              key={index}
+              userName={publicacion.email}
+              address={publicacion.direccion}
+              coords={publicacion.coordenadas}
+              setCoordenadas={setCoordenadas}
+              imagePost={publicacion.url_image}
+              setModalVisible={setModalVisible}
+            />
           ))}
         </ScrollView>
       </View>
@@ -64,7 +88,11 @@ export default function Home({ navigation }: any) {
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-      <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <ModalMap
+        coords={coordenadas}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </View>
   );
 }

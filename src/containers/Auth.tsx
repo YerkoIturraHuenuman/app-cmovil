@@ -51,7 +51,10 @@ export const Auth = (props: any) => {
       const objectUser: InterUsuario = {
         userID: user.uid,
         userEmail: user.email,
+        PublicacionID: null,
+        direccion: null,
         coordenadasPublicacion: null,
+        url_img: null,
       };
 
       WriteDataComponent(objectUser, 1);
@@ -131,6 +134,7 @@ export const Auth = (props: any) => {
           >
             {title}
           </Text>
+
           <TextInput
             placeholder="Ingrese Email"
             onChangeText={setEmail}

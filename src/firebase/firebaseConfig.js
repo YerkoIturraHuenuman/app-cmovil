@@ -4,9 +4,9 @@ import {
   initializeAuth,
   getReactNativePersistence,
 } from "firebase/auth";
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-
+import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 // Optionally import the services that you want to use
 // import {...} from "firebase/auth";
@@ -24,6 +24,7 @@ const firebaseConfig = {
   messagingSenderId: "1063934609160",
   appId: "1:1063934609160:web:43da0b7c60b1aedc598ebd",
   databaseURL: "https://app-cmovil-default-rtdb.firebaseio.com/",
+  storageBucket: "gs://app-cmovil.appspot.com",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -34,5 +35,6 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 const database = getDatabase(app);
+const storage = getStorage(app);
 
-export { auth, database };
+export { auth, database, storage };

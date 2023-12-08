@@ -5,10 +5,18 @@ const VariablesContext = createContext<any>(undefined);
 export const VariablesContextProvider = ({ children }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [keyUser, setKeyUser] = useState(undefined);
+  const [coordenadas, setCoordenadas] = useState<any>();
 
   return (
     <VariablesContext.Provider
-      value={{ modalVisible, setModalVisible, keyUser, setKeyUser }}
+      value={{
+        modalVisible,
+        setModalVisible,
+        keyUser,
+        setKeyUser,
+        coordenadas,
+        setCoordenadas,
+      }}
     >
       {children}
     </VariablesContext.Provider>
