@@ -1,7 +1,9 @@
-export function ErrorComp() {
+import { Text, View } from "react-native";
+
+export function ErrorComp({ title }: any) {
   return (
-    <div>
-      <h2>Lo sentimos, hubo algún error :c</h2>
-    </div>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>{title}</Text>
+    </View>
   );
 }

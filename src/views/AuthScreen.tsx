@@ -1,6 +1,6 @@
 import React from "react";
 import { StatusBar, View, StyleSheet } from "react-native";
-import { Auth } from "../containers/Auth";
+import { Auth } from "../containers/AuthContainer";
 
 export default function AuthScreen({ navigation }: any) {
   return (

@@ -5,10 +5,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
-import CamaraScreen from "../containers/CamaraScreen";
+import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
-import AuthScreen from "../screens/AuthScreen";
+import AuthScreen from "../views/AuthScreen";
 import { VariablesContextProvider } from "../contexts/VariablesContext";
 
 export function LogoTitle() {
@@ -49,10 +49,14 @@ export default function StackNavigator() {
             header: () => (
               <View
                 style={{
+                  borderWidth: 1,
+                  borderColor: "#ebebeb",
+                  height: 90,
                   width: "100%",
-                  alignItems: "center",
                   backgroundColor: "transparent",
-                  top: 30,
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <LogoTitle />

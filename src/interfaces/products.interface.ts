@@ -3,7 +3,7 @@ export interface InterUsuario {
   userEmail: string | null;
   PublicacionID: string | null;
   direccion: string | null;
-  coordenadasPublicacion: object | null;
+  coordenadasPublicacion: object | null | undefined;
   url_img: string | unknown;
 }
 export interface RespuestaLogin {

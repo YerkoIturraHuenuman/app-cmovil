@@ -11,12 +11,14 @@ import {
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { Publicacion } from "../containers/Publicacion";
-import ModalMap from "../containers/ModalMap";
+import { Publicacion } from "../components/Publicacion";
+import ModalMap from "../containers/ModalMapContainer";
 
 import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
 import { readUserData } from "../firebase/database";
 import { Usuario, Usuarios } from "../interfaces/products.interface";
+import { ErrorComp } from "../components/Error";
+import { Carga } from "../components/Carga";
 
 //--------------------------------------------------------------------------------------
 
@@ -26,32 +28,37 @@ export default function Home({ navigation }: any) {
     useVariablesContext();
   const [publicaciones, setPublicaciones] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const getUsuarios = async () => {
     setLoading(true);
-    const res: any = await readUserData();
-    if (res) {
-      //console.log("res se ha resuelto");
-      //console.log("res: ", res);
-      const usuariosConPublicaciones = Object.values(res).filter(
-        (usuario: any) => usuario.publicaciones
-      );
-      let resultado: any = [];
-      usuariosConPublicaciones.forEach((usuario: any) => {
-        Object.values(usuario.publicaciones).forEach((publicacion: any) => {
-          //console.log(publicacion);
-          resultado.push({
-            email: usuario.email,
-            direccion: publicacion.direccion,
-            coordenadas: publicacion.coordenada,
-            url_image: publicacion.url_img,
+    try {
+      const res: any = await readUserData();
+      if (res) {
+        //console.log("res se ha resuelto");
+        //console.log("res: ", res);
+        const usuariosConPublicaciones = Object.values(res).filter(
+          (usuario: any) => usuario.publicaciones
+        );
+        let resultado: any = [];
+        usuariosConPublicaciones.forEach((usuario: any) => {
+          Object.values(usuario.publicaciones).forEach((publicacion: any) => {
+            //console.log(publicacion);
+            resultado.push({
+              email: usuario.email,
+              direccion: publicacion.direccion,
+              coordenadas: publicacion.coordenada,
+              url_image: publicacion.url_img,
+            });
           });
         });
-      });
-      setPublicaciones(resultado);
+        setPublicaciones(resultado);
+      }
+      setLoading(false);
+    } catch (error) {
+      setError(true);
     }
-    setLoading(false);
   };
   //------------------------PROCESOS--------------------------
   useEffect(
@@ -63,6 +70,8 @@ export default function Home({ navigation }: any) {
     [, navigation]
   );
   //console.log(publicaciones);
+  if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
+  else if (loading) return <Carga />;
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
@@ -106,44 +115,7 @@ const styles = StyleSheet.create({
     paddingTop: 90,
     flex: 1,
   },
-  headerPublicacion: {
-    paddingHorizontal: 15,
-    paddingTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  fotoPerfil: {
-    width: 55,
-    height: 55,
-    objectFit: "cover",
-    borderRadius: 100,
-  },
-  nombreUserPublicacion: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginLeft: 15,
-  },
-  fotoPublicacion: {
-    marginTop: 20,
-    width: "100%",
-    height: 400,
-  },
-  footerPublicacion: {
-    paddingHorizontal: 15,
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  textUbicacion: {
-    marginHorizontal: 10,
-    flex: 1,
-  },
-  botonMapa: {
-    backgroundColor: "#5bee00",
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 7,
-  },
+
   contenedorBotonesPrincipales: {
     position: "absolute",
     bottom: 0,

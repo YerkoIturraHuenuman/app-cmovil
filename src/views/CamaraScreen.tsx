@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as Location from "expo-location";
 import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
@@ -8,22 +8,23 @@ import { faBolt, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { useFocusEffect } from "@react-navigation/native";
 export default function CamaraScreen({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [type, setType] = useState(CameraType.back);
   const [flash, setFlash] = useState(FlashMode.off);
-  const camaraRef = useRef<any>(null);
+  let camaraRef = useRef<any>(null);
   const [image, setImage] = useState(null);
   const [address, setAdress] = useState<any>(null);
   const [location, setLocation] = useState<any>(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [loading, setLoading] = useState(true);
   //------------------------FUNCIONES PRINCIPALES--------------------------
+
+  //------------------------PROCESOS--------------------------
   const tomarFoto = async () => {
     if (camaraRef && camaraRef.current) {
       try {
         const data = await camaraRef.current.takePictureAsync();
+        navigation.pop();
         navigation.navigate("PrePost", {
           uri: data.uri,
           address: address,
@@ -32,9 +33,8 @@ export default function CamaraScreen({ navigation }: any) {
       } catch (error) {}
     }
   };
-  //------------------------PROCESOS--------------------------
-
   const tomandoLocalizacion = async () => {
+    console.log("Tomando localizacion...");
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       console.log("!granted");
@@ -49,35 +49,24 @@ export default function CamaraScreen({ navigation }: any) {
         `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
       );
       setLocation(coordenadas.coords);
-      //console.log("address", address);
-      //console.log("coords", coordenadas.coords);
+      console.log("Localizacion completa");
     } catch (error) {
       console.error(error);
     }
   };
+  const recargaCam = () => {
+    if (camaraRef.current !== null) {
+      console.log("Camara: ", camaraRef);
+      camaraRef.current.resumePreview();
+      console.log("Recamara completa");
+    }
+  };
   useEffect(() => {
-    Location.requestForegroundPermissionsAsync();
     tomandoLocalizacion();
-    console.log("Tomando localizacion");
+    recargaCam();
     setLoading(false);
   }, []);
-  useEffect(() => {
-    console.log("Cargando camara...");
-    if (camaraRef.current !== null) {
-      //console.log("Camara: ", camaraRef);
-      camaraRef.current.resumePreview();
-      console.log("Camara completa");
-      setLoading(false);
-    }
-  }, [camaraRef.current]);
-  useEffect(
-    () =>
-      navigation.addListener("focus", () => {
-        console.log("FOCUS CAMARA");
-        forceUpdate();
-      }),
-    [navigation]
-  );
+
   if (!permission?.granted) {
     return (
       <View
@@ -97,7 +86,9 @@ export default function CamaraScreen({ navigation }: any) {
     );
   }
   //console.log("viendo:", navigation);
-  if (!loading)
+  else if (!loading) {
+    //console.log("return");
+
     return (
       <View style={styles.contenedorPrincipal}>
         <Camera
@@ -123,7 +114,7 @@ export default function CamaraScreen({ navigation }: any) {
         </View>
       </View>
     );
-  else if (loading) {
+  } else if (loading) {
     return (
       <View>
         <Text>Cargando...</Text>

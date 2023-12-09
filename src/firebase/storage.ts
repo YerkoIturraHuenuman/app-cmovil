@@ -7,7 +7,6 @@ const writeData = async (data: InterDataImg) => {
     storage,
     `usuarios/${data.userID}/publicaciones/${data.PublicacionID}`
   );
-  console.log("data img = ", data.img);
   return convertedImage(data.img)
     .then((res) => {
       //console.log("data antes de subir: ", res);

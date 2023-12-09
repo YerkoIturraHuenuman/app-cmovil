@@ -14,31 +14,31 @@ import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useRoute } from "@react-navigation/native";
 import { InterDataImg, InterUsuario } from "../interfaces/products.interface";
 import { useVariablesContext } from "../contexts/VariablesContext";
+import { Carga } from "../components/Carga";
+import { ErrorComp } from "../components/Error";
 
 export default function PrePost({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
   const route = useRoute();
   const image = (route.params as { uri?: string })?.uri || "";
   const address = (route.params as { address?: string })?.address || "";
-  const coords = (route.params as { coords?: string })?.coords || "";
-
+  const coords = (route.params as { coords?: object })?.coords;
   const { keyUser } = useVariablesContext();
-  //const [location, setLocation] = useState<any>(null);
-  //const [address, setAdress] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const handleGuardarEnBaseDeDatos = async () => {
-    /*try {
+    try {
+      setLoading(true);
       const clave = generarClave();
-      //const base64Image = (await convertirURIABase64(image)) as string;
       const object2: InterDataImg = {
         userID: keyUser,
         PublicacionID: clave,
         img: image,
       };
       const res_url = await writeData(object2);
-      console.log("res_url: ", res_url);
+      //console.log("res_url: ", res_url);
       const object: InterUsuario = {
         userID: keyUser,
         userEmail: null,
@@ -48,35 +48,13 @@ export default function PrePost({ navigation }: any) {
         url_img: res_url,
       };
       const res = await WriteDataComponent(object, 2);
+      setLoading(false);
+      navigation.navigate("Home");
     } catch (error) {
-      console.error("Error al guardar en la base de datos:", error);
-    }*/
-  };
-  //------------------------PROCESOS--------------------------
-  useEffect(() => {
-    //setLoading(true);
-  }, []);
-  console.log("variables pasadas: ", coords);
-  const convertirURIABase64 = async (uri: string) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onload = () => {
-          if (reader.result) {
-            resolve(reader.result.toString());
-          }
-        };
-        reader.readAsDataURL(blob);
-      });
-      return base64;
-    } catch (error) {
-      console.error("Error al convertir la imagen a base64:", error);
-      throw error;
+      setError(true);
     }
   };
+  //------------------------PROCESOS--------------------------
   const generarClave = () => {
     let caracteres =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -86,14 +64,10 @@ export default function PrePost({ navigation }: any) {
     }
     return clave;
   };
-  if (loading)
-    return (
-      <View style={{ flex: 1 }}>
-        <Text>Cargando...</Text>
-      </View>
-    );
+  if (error)
+    return <ErrorComp title={"Tuvimos un problema al subir tu post :C"} />;
+  else if (loading) return <Carga />;
   else if (!loading) {
-    console.log("cargado");
     return (
       <View style={styles.contenedorPrincipal}>
         <Image source={{ uri: image }} style={styles.fotoTomada} />
