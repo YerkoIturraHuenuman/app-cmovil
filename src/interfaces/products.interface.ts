@@ -15,26 +15,36 @@ export interface InterDataImg {
   PublicacionID: string;
   img: any;
 }
-export interface Coordenada {
-  accuracy: number;
-  altitude: number;
-  altitudeAccuracy: number;
-  heading: number;
-  latitude: number;
-  longitude: number;
-  speed: number;
+export interface Usuario {
+  email: string;
+  publicaciones?: Publicacion;
 }
 
 export interface Publicacion {
-  coordenada: Coordenada;
+  coordenada: {
+    accuracy: number;
+    altitude: number;
+    altitudeAccuracy: number;
+    heading: number;
+    latitude: number;
+    longitude: number;
+    speed: number;
+  };
+  direccion: string;
   url_img: string;
 }
 
-export interface Usuario {
-  email?: string;
-  publicaciones?: Record<string, Publicacion>;
-}
-
-export interface Usuarios {
-  [key: string]: Usuario;
+export interface PublicacionFinal {
+  email: string;
+  direccion: string;
+  coordenadas: {
+    accuracy: number;
+    altitude: number;
+    altitudeAccuracy: number;
+    heading: number;
+    latitude: number;
+    longitude: number;
+    speed: number;
+  };
+  url_image: string;
 }

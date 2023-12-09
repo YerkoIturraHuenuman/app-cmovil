@@ -16,13 +16,15 @@ export default function CamaraScreen({ navigation }: any) {
   const [address, setAdress] = useState<any>(null);
   const [location, setLocation] = useState<any>(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   //------------------------FUNCIONES PRINCIPALES--------------------------
 
   //------------------------PROCESOS--------------------------
   const tomarFoto = async () => {
     if (camaraRef && camaraRef.current) {
       try {
+        setDisabled(true);
         const data = await camaraRef.current.takePictureAsync();
         navigation.pop();
         navigation.navigate("PrePost", {
@@ -40,7 +42,7 @@ export default function CamaraScreen({ navigation }: any) {
       console.log("!granted");
       return;
     }
-    let coordenadas: any;
+    let coordenadas: Location.LocationObject;
     let address: any;
     try {
       coordenadas = await Location.getCurrentPositionAsync({});
@@ -84,9 +86,13 @@ export default function CamaraScreen({ navigation }: any) {
         <Button onPress={requestPermission} title="Dar Permisos" />
       </View>
     );
-  }
-  //console.log("viendo:", navigation);
-  else if (!loading) {
+  } else if (loading) {
+    return (
+      <View>
+        <Text>Cargando...</Text>
+      </View>
+    );
+  } else if (!loading) {
     //console.log("return");
 
     return (
@@ -99,25 +105,18 @@ export default function CamaraScreen({ navigation }: any) {
           ratio="16:9"
         ></Camera>
         <View style={styles.footerBotonesCamara}>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faBolt} size={30} color="#fff" />
-          </TouchableOpacity>
           <TouchableOpacity
             onPress={tomarFoto}
             style={{ marginHorizontal: 60 }}
+            disabled={disabled}
           >
-            <FontAwesomeIcon icon={faCircle} size={70} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faRotate} size={30} color="#fff" />
+            <FontAwesomeIcon
+              icon={faCircle}
+              size={70}
+              color={!disabled ? "#fff" : "#707070"}
+            />
           </TouchableOpacity>
         </View>
-      </View>
-    );
-  } else if (loading) {
-    return (
-      <View>
-        <Text>Cargando...</Text>
       </View>
     );
   }

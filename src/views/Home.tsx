@@ -16,7 +16,7 @@ import ModalMap from "../containers/ModalMapContainer";
 
 import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
 import { readUserData } from "../firebase/database";
-import { Usuario, Usuarios } from "../interfaces/products.interface";
+import { PublicacionFinal, Usuario } from "../interfaces/products.interface";
 import { ErrorComp } from "../components/Error";
 import { Carga } from "../components/Carga";
 
@@ -26,7 +26,7 @@ export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
   const { modalVisible, setModalVisible, coordenadas, setCoordenadas } =
     useVariablesContext();
-  const [publicaciones, setPublicaciones] = useState([]);
+  const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -34,17 +34,17 @@ export default function Home({ navigation }: any) {
   const getUsuarios = async () => {
     setLoading(true);
     try {
-      const res: any = await readUserData();
+      const res = (await readUserData()) as Usuario;
       if (res) {
-        //console.log("res se ha resuelto");
-        //console.log("res: ", res);
         const usuariosConPublicaciones = Object.values(res).filter(
-          (usuario: any) => usuario.publicaciones
+          (usuario: Usuario) => {
+            console.log(usuario);
+            return usuario.publicaciones;
+          }
         );
-        let resultado: any = [];
+        let resultado: PublicacionFinal[] = [];
         usuariosConPublicaciones.forEach((usuario: any) => {
           Object.values(usuario.publicaciones).forEach((publicacion: any) => {
-            //console.log(publicacion);
             resultado.push({
               email: usuario.email,
               direccion: publicacion.direccion,
@@ -64,12 +64,13 @@ export default function Home({ navigation }: any) {
   useEffect(
     () =>
       navigation.addListener("focus", () => {
-        console.log("home");
+        console.log(
+          "==================================================================================================================================================================="
+        );
         getUsuarios();
       }),
-    [, navigation]
+    [navigation]
   );
-  //console.log(publicaciones);
   if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
   else if (loading) return <Carga />;
   return (
