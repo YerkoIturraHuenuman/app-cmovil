@@ -7,78 +7,105 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import * as Location from "expo-location";
-
+import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
+import { writeData } from "../firebase/storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-
 import { useRoute } from "@react-navigation/native";
+import { InterDataImg, InterUsuario } from "../interfaces/products.interface";
+import { useVariablesContext } from "../contexts/VariablesContext";
+import { Carga } from "../components/Carga";
+import { ErrorComp } from "../components/Error";
+
 export default function PrePost({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const [location, setLocation] = useState<any>(null);
-  const [address, setAdress] = useState<any>(null);
-  //------------------------FUNCIONES PRINCIPALES--------------------------
-  useEffect(
-    () =>
-      navigation.addListener(
-        "focus",
-        () => {
-          console.log("home");
-        },
-        (async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== "granted") {
-            return;
-          }
-          let location: any = await Location.getCurrentPositionAsync({});
-          let address = await Location.reverseGeocodeAsync(location.coords);
-          setAdress(
-            `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
-          );
-          setLocation(location);
-          //funcionSaveCoords(address[0], id_user) AQUI FUNCION PARA GUARDAR LAS COORDENADAS DEL USUARIO EN FIREBASE
-          console.log("address", address);
-        })()
-      ),
-    [, navigation]
-  );
-  //------------------------PROCESOS--------------------------
   const route = useRoute();
-  const image = (route.params as { uri?: string })?.uri;
-  return (
-    <View style={styles.contenedorPrincipal}>
-      <Image source={{ uri: image }} style={styles.fotoTomada} />
-      <View style={styles.footerPublicacion}>
-        <View style={{}}>
-          <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+  const image = (route.params as { uri?: string })?.uri || "";
+  const address = (route.params as { address?: string })?.address || "";
+  const coords = (route.params as { coords?: object })?.coords;
+  const { keyUser } = useVariablesContext();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  //------------------------FUNCIONES PRINCIPALES--------------------------
+  const handleGuardarEnBaseDeDatos = async () => {
+    try {
+      setLoading(true);
+      const clave = generarClave();
+      const object2: InterDataImg = {
+        userID: keyUser,
+        PublicacionID: clave,
+        img: image,
+      };
+      const res_url = await writeData(object2);
+      //console.log("res_url: ", res_url);
+      const object: InterUsuario = {
+        userID: keyUser,
+        userEmail: null,
+        PublicacionID: clave,
+        direccion: address,
+        coordenadasPublicacion: coords,
+        url_img: res_url,
+      };
+      const res = await WriteDataComponent(object, 2);
+      setLoading(false);
+      navigation.navigate("Home");
+    } catch (error) {
+      setError(true);
+    }
+  };
+  //------------------------PROCESOS--------------------------
+  const generarClave = () => {
+    let caracteres =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let clave = "";
+    for (let i = 0; i < 10; i++) {
+      clave += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return clave;
+  };
+  if (error)
+    return <ErrorComp title={"Tuvimos un problema al subir tu post :C"} />;
+  else if (loading) return <Carga />;
+  else if (!loading) {
+    return (
+      <View style={styles.contenedorPrincipal}>
+        <Image source={{ uri: image }} style={styles.fotoTomada} />
+        <View style={styles.footerPublicacion}>
+          <View style={{}}>
+            <FontAwesomeIcon icon={faLocationDot} size={20} color="#5bee00" />
+          </View>
+          <Text style={styles.textUbicacion}>{address}</Text>
         </View>
-        <Text style={styles.textUbicacion}>{address}</Text>
-      </View>
-      <View style={styles.contenedorBotones}>
-        <Pressable
-          onPress={() => navigation.navigate("Home")}
-          style={styles.botonCancelar}
-        >
-          <Text
-            style={{
-              color: "#5bee00",
-              fontWeight: "bold",
-              textAlign: "center",
-            }}
+        <View style={styles.contenedorBotones}>
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
+            style={styles.botonCancelar}
           >
-            Cancelar
-          </Text>
-        </Pressable>
-        <TouchableOpacity style={styles.botonSubir}>
-          <Text
-            style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}
+            <Text
+              style={{
+                color: "#5bee00",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Cancelar
+            </Text>
+          </Pressable>
+          <TouchableOpacity
+            onPress={handleGuardarEnBaseDeDatos}
+            style={styles.botonSubir}
           >
-            Subir
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}
+            >
+              Subir
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 }
 const styles = StyleSheet.create({
   contenedorPrincipal: {

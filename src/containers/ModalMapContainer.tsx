@@ -10,34 +10,18 @@ import {
 } from "react-native";
 
 import MapView, { Marker, Callout } from "react-native-maps";
-import * as Location from "expo-location";
 
-export default function ModalMap({ modalVisible, setModalVisible }: any) {
-  const [location, setLocation] = useState<any>(null);
-  const [address, setAdress] = useState<any>(null);
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        return;
-      }
-
-      let location: any = await Location.getCurrentPositionAsync({});
-      let address = await Location.reverseGeocodeAsync(location.coords);
-      setAdress(
-        `${address[0].street} ${address[0].streetNumber}, ${address[0].city}, ${address[0].region}, ${address[0].country}`
-      );
-      setLocation(location);
-      console.log("abrir modal");
-    })();
-  }, []);
+export default function ModalMap({
+  modalVisible,
+  setModalVisible,
+  coords,
+}: any) {
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
         setModalVisible(false);
       }}
     >
@@ -49,10 +33,10 @@ export default function ModalMap({ modalVisible, setModalVisible }: any) {
           ></Pressable>
           <MapView
             region={
-              location && location.coords
+              coords
                 ? {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                   }
@@ -60,17 +44,17 @@ export default function ModalMap({ modalVisible, setModalVisible }: any) {
             }
             style={styles.map}
           >
-            {location && (
+            {coords && (
               <Marker
                 coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
+                  latitude: coords.latitude,
+                  longitude: coords.longitude,
                 }}
               >
                 <Callout tooltip style={{}}>
                   <View style={{ maxWidth: 300 }}>
                     <View style={styles.popperMarca}>
-                      <Text>{address}</Text>
+                      <Text>asdasd</Text>
                     </View>
                   </View>
                 </Callout>

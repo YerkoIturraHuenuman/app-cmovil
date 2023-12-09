@@ -1,40 +1,94 @@
 import React, { useEffect, createContext, useContext, useState } from "react";
 import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Text,
+} from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import Publicacion from "../containers/Publicacion";
-import ModalMap from "../containers/ModalMap";
+import { Publicacion } from "../components/Publicacion";
+import ModalMap from "../containers/ModalMapContainer";
 
 import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
 import { readUserData } from "../firebase/database";
+import { PublicacionFinal, Usuario } from "../interfaces/products.interface";
+import { ErrorComp } from "../components/Error";
+import { Carga } from "../components/Carga";
 
 //--------------------------------------------------------------------------------------
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const { modalVisible, setModalVisible } = useVariablesContext();
-  const [usuarios, setUsuarios] = useState<unknown>([]);
+  const { modalVisible, setModalVisible, coordenadas, setCoordenadas } =
+    useVariablesContext();
+  const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const getUsuarios = async () => {
-    const users = await readUserData();
-    setUsuarios(users);
+    setLoading(true);
+    try {
+      const res = (await readUserData()) as Usuario;
+      if (res) {
+        const usuariosConPublicaciones = Object.values(res).filter(
+          (usuario: Usuario) => {
+            console.log(usuario);
+            return usuario.publicaciones;
+          }
+        );
+        let resultado: PublicacionFinal[] = [];
+        usuariosConPublicaciones.forEach((usuario: any) => {
+          Object.values(usuario.publicaciones).forEach((publicacion: any) => {
+            resultado.push({
+              email: usuario.email,
+              direccion: publicacion.direccion,
+              coordenadas: publicacion.coordenada,
+              url_image: publicacion.url_img,
+            });
+          });
+        });
+        setPublicaciones(resultado);
+      }
+      setLoading(false);
+    } catch (error) {
+      setError(true);
+    }
   };
   //------------------------PROCESOS--------------------------
   useEffect(
     () =>
       navigation.addListener("focus", () => {
-        console.log("home");
+        console.log(
+          "==================================================================================================================================================================="
+        );
         getUsuarios();
       }),
-    [, navigation]
+    [navigation]
   );
-  console.log("usuraios: ", usuarios);
+  if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
+  else if (loading) return <Carga />;
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
-        <Publicacion setModalVisible={setModalVisible} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {publicaciones.map((publicacion: any, index: number) => (
+            <Publicacion
+              key={index}
+              userName={publicacion.email}
+              address={publicacion.direccion}
+              coords={publicacion.coordenadas}
+              setCoordenadas={setCoordenadas}
+              imagePost={publicacion.url_image}
+              setModalVisible={setModalVisible}
+            />
+          ))}
+        </ScrollView>
       </View>
       <View style={styles.contenedorBotonesPrincipales}>
         <TouchableOpacity
@@ -44,61 +98,25 @@ export default function Home({ navigation }: any) {
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-      <ModalMap modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <ModalMap
+        coords={coordenadas}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    paddingTop: 110,
-    paddingBottom: 78,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     flex: 1,
   },
   contenedorPrincipal: {
-    borderTopWidth: 1,
-    borderTopColor: "#F1F1F1",
+    paddingTop: 90,
     flex: 1,
   },
-  headerPublicacion: {
-    paddingHorizontal: 15,
-    paddingTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  fotoPerfil: {
-    width: 55,
-    height: 55,
-    objectFit: "cover",
-    borderRadius: 100,
-  },
-  nombreUserPublicacion: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginLeft: 15,
-  },
-  fotoPublicacion: {
-    marginTop: 20,
-    width: "100%",
-    height: 400,
-  },
-  footerPublicacion: {
-    paddingHorizontal: 15,
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  textUbicacion: {
-    marginHorizontal: 10,
-    flex: 1,
-  },
-  botonMapa: {
-    backgroundColor: "#5bee00",
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 7,
-  },
+
   contenedorBotonesPrincipales: {
     position: "absolute",
     bottom: 0,

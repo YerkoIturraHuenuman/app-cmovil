@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Image, View, StyleSheet, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import CamaraScreen from "../containers/CamaraScreen";
+import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 

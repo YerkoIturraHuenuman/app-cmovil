@@ -13,14 +13,14 @@ import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { InterUsuario, RespuestaLogin } from "../interfaces/products.interface";
+import { useVariablesContext } from "../contexts/VariablesContext";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
-interface IError {
-  code: string;
-  message: string;
-}
 
 export const Auth = (props: any) => {
   //--------------------------------------SET GENERALES--------------------------------------
+  const { setKeyUser } = useVariablesContext();
+
   const [title, setTitle] = useState("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState("Login");
   const [email, setEmail] = useState("");
@@ -48,7 +48,16 @@ export const Auth = (props: any) => {
 
     const user = await signIn(email, password);
     if (user) {
-      WriteDataComponent(user.uid, user.email);
+      const objectUser: InterUsuario = {
+        userID: user.uid,
+        userEmail: user.email,
+        PublicacionID: null,
+        direccion: null,
+        coordenadasPublicacion: null,
+        url_img: null,
+      };
+
+      WriteDataComponent(objectUser, 1);
       setLoading(false);
       setTitle("Inicio Sesión");
       setTitleBoton("Login");
@@ -66,11 +75,16 @@ export const Auth = (props: any) => {
     setError(undefined);
     setMensaje(undefined);
 
-    const successRegister = await logIn(email, password);
-    if (successRegister) {
+    const successLogin = await logIn(email, password);
+    if (successLogin.res) {
+      setKeyUser(successLogin.userID);
       setLoading(false);
+      console.log("successLogin: ", successLogin.userID);
       props.navigation.navigate("Home");
-      console.log("redirecciona");
+      props.navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     } else {
       setError("Usuario no registrado!");
       setLoading(false);
@@ -120,6 +134,7 @@ export const Auth = (props: any) => {
           >
             {title}
           </Text>
+
           <TextInput
             placeholder="Ingrese Email"
             onChangeText={setEmail}
