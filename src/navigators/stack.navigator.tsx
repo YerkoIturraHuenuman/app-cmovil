@@ -9,8 +9,8 @@ import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../views/AuthScreen";
-import { VariablesContextProvider } from "../contexts/VariablesContext";
 import Pruebas from "../views/Pruebas";
+
 import RegistroAvatar from "../views/RegistroAvatar";
 
 export function LogoTitle() {
@@ -30,19 +30,11 @@ export default function StackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <VariablesContextProvider>
       <Stack.Navigator
         screenOptions={{
           headerTransparent: true,
         }}
       >
-        {/*<Stack.Screen
-          name="Pruebas"
-          component={Pruebas}
-          options={{
-            headerTitle: "",
-          }}
-        />*/}
         <Stack.Screen
           name="Auth"
           component={AuthScreen}
@@ -118,7 +110,6 @@ export default function StackNavigator() {
           }}
         />
       </Stack.Navigator>
-    </VariablesContextProvider>
   );
 }
 const styles = StyleSheet.create({
