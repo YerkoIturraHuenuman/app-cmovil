@@ -19,12 +19,20 @@ export const Publicacion = ({
   coords,
   setCoordenadas,
   imagePost,
+  tiempoTranscurrido,
+  IDAvatar,
 }: any) => {
+  const avatars: any = {
+    avatar1: require("../../assets/bass/avatar1.jpg"),
+    avatar2: require("../../assets/bass/avatar2.jpg"),
+    // ... otros avatares ...
+  };
+  //
   return (
     <View style={{ marginBottom: 20 }}>
       <View style={styles.headerPublicacion}>
         <Image
-          source={require("../../assets/bass/fotoPerfil1.jpg")}
+          source={avatars[`avatar${IDAvatar}`]}
           style={styles.fotoPerfil}
         />
         <Text style={styles.nombreUserPublicacion}>{userName}</Text>
@@ -53,7 +61,7 @@ export const Publicacion = ({
           fontSize: 12,
         }}
       >
-        Hace 2 horas
+        {tiempoTranscurrido}
       </Text>
     </View>
   );

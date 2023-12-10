@@ -13,8 +13,13 @@ import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { InterUsuario, RespuestaLogin } from "../interfaces/products.interface";
+import {
+  InterUsuario,
+  RespuestaLogin,
+  Usuario,
+} from "../interfaces/products.interface";
 import { useVariablesContext } from "../contexts/VariablesContext";
+import { getUser } from "../firebase/database";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
@@ -47,6 +52,7 @@ export const Auth = (props: any) => {
     setMensaje(undefined);
 
     const user = await signIn(email, password);
+    console.log("Datos del registro: ", user);
     if (user) {
       const objectUser: InterUsuario = {
         userID: user.uid,
@@ -55,6 +61,7 @@ export const Auth = (props: any) => {
         direccion: null,
         coordenadasPublicacion: null,
         url_img: null,
+        registroCompleto: false,
       };
 
       WriteDataComponent(objectUser, 1);
@@ -63,11 +70,9 @@ export const Auth = (props: any) => {
       setTitleBoton("Login");
       setMensaje("Usuario creado, inicia sesión");
       setToggle(!toggle);
-      return true;
     } else {
       setError("Usuario ya está registrado!");
       setLoading(false);
-      return false;
     }
   };
   const handlerLogin = async () => {
@@ -77,14 +82,25 @@ export const Auth = (props: any) => {
 
     const successLogin = await logIn(email, password);
     if (successLogin.res) {
+      console.log("id de login: ", successLogin.userID);
       setKeyUser(successLogin.userID);
       setLoading(false);
-      console.log("successLogin: ", successLogin.userID);
-      props.navigation.navigate("Home");
-      props.navigation.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
+      const user = (await getUser(successLogin.userID)) as Usuario;
+      console.log(
+        "Usuario: ",
+        user.email,
+        "Registro Completo: ",
+        user.registroCompleto
+      );
+      if (!user.registroCompleto) {
+        props.navigation.navigate("RegistroAvatar");
+      } else if (user.registroCompleto) {
+        props.navigation.navigate("Home");
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+      }
     } else {
       setError("Usuario no registrado!");
       setLoading(false);
