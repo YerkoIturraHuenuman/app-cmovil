@@ -8,26 +8,20 @@ import {
   ImageBackground,
   Animated,
 } from "react-native";
-import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
-import { logIn, signIn } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useAuthContext, useUserContext, useVariablesContext } from "../contexts/VariablesContext";
-import {
-  InterUsuario,
-  RespuestaLogin,
-  Usuario,
-} from "../interfaces/products.interface";
-import { getUser } from "../firebase/database";
+
 import useAuth from "../hooks/useAuth";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
 
+  //---------------------Recupera variables globales de contexto-------------------
+
   const { 
     loading,
-    setLoading,
     error,
     setError,
     toggle,
@@ -35,7 +29,6 @@ export const Auth = (props: any) => {
    } = useVariablesContext();
 
   const {
-    setMensaje,
     mensaje,
     setTitle,
     title,
@@ -50,13 +43,14 @@ export const Auth = (props: any) => {
     setPassword,
    } = useUserContext();
 
+   //--------------------------------Custom hook auth----------------------------------------
    const {
     handlerLogin,
     handlerRegister,
     handlerLoginGoogle
-   } = useAuth(props)
+  } = useAuth(props)
    
- 
+ //------------------------------------------------------------------------------------------
   const animation = useRef(new Animated.Value(0)).current;
   const translateY = animation.interpolate({
     inputRange: [0, 0.5, 1],
@@ -67,9 +61,8 @@ export const Auth = (props: any) => {
     inputRange: [0, 0.5, 1],
     outputRange: [1, 0, 1],
   });
-  //--------------------------------------PROCEDIMIENTOS--------------------------------------
-  
 
+  //--------------------------------------PROCEDIMIENTOS--------------------------------------
   useEffect(() => {
     Animated.sequence([
       Animated.timing(animation, {
@@ -79,7 +72,6 @@ export const Auth = (props: any) => {
       }),
     ]).start();
   }, [toggle]);
-
   //------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
