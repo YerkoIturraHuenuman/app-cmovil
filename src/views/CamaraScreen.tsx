@@ -26,12 +26,14 @@ export default function CamaraScreen({ navigation }: any) {
       try {
         setDisabled(true);
         const data = await camaraRef.current.takePictureAsync();
-        navigation.pop();
-        navigation.navigate("PrePost", {
-          uri: data.uri,
-          address: address,
-          coords: location,
-        });
+        if (address && address != "") {
+          navigation.pop();
+          navigation.navigate("PrePost", {
+            uri: data.uri,
+            address: address,
+            coords: location,
+          });
+        }
       } catch (error) {}
     }
   };
@@ -58,15 +60,17 @@ export default function CamaraScreen({ navigation }: any) {
   };
   const recargaCam = () => {
     if (camaraRef.current !== null) {
-      console.log("Camara: ", camaraRef);
+      //console.log("Camara: ", camaraRef);
       camaraRef.current.resumePreview();
       console.log("Recamara completa");
     }
   };
   useEffect(() => {
-    tomandoLocalizacion();
-    recargaCam();
-    setLoading(false);
+    (async () => {
+      await tomandoLocalizacion();
+      recargaCam();
+      setLoading(false);
+    })();
   }, []);
 
   if (!permission?.granted) {
