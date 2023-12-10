@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { PublicacionFinal, Usuario } from "../interfaces/products.interface";
+import { PublicacionFinal } from "../interfaces/products.interface";
 
 const VariablesContext = createContext<any>(undefined);
 const UserContext = createContext<any>(undefined);
