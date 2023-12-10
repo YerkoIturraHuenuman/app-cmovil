@@ -18,6 +18,9 @@ export default function CamaraScreen({ navigation }: any) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [statusLocation, requestPermissionLocation] =
+    Location.useForegroundPermissions();
+
   //------------------------FUNCIONES PRINCIPALES--------------------------
 
   //------------------------PROCESOS--------------------------
@@ -38,12 +41,7 @@ export default function CamaraScreen({ navigation }: any) {
     }
   };
   const tomandoLocalizacion = async () => {
-    console.log("Tomando localizacion...");
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("!granted");
-      return;
-    }
+    //console.log("Permisos location: ", statusLocation);
     let coordenadas: Location.LocationObject;
     let address: any;
     try {
@@ -66,13 +64,14 @@ export default function CamaraScreen({ navigation }: any) {
     }
   };
   useEffect(() => {
-    (async () => {
-      await tomandoLocalizacion();
-      recargaCam();
-      setLoading(false);
-    })();
+    recargaCam();
+    setLoading(false);
   }, []);
-
+  useEffect(() => {
+    (async () => {
+      if (statusLocation) await tomandoLocalizacion();
+    })();
+  }, [statusLocation]);
   if (!permission?.granted) {
     return (
       <View
@@ -85,9 +84,15 @@ export default function CamaraScreen({ navigation }: any) {
         }}
       >
         <Text style={{ textAlign: "center", marginBottom: 10, color: "#fff" }}>
-          Se necesitan permisos para acceder a la camara
+          Se necesitan permisos para acceder a la camara y su locación
         </Text>
-        <Button onPress={requestPermission} title="Dar Permisos" />
+        <Button
+          onPress={() => {
+            requestPermission();
+            requestPermissionLocation();
+          }}
+          title="Dar Permisos"
+        />
       </View>
     );
   } else if (loading) {
