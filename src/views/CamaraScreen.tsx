@@ -4,8 +4,6 @@ import * as Location from "expo-location";
 import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
-import { faBolt, faRotate } from "@fortawesome/free-solid-svg-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import { useVariablesContext } from "../contexts/VariablesContext";
 export default function CamaraScreen({ navigation }: any) {
 

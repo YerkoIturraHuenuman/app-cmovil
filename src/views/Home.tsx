@@ -11,12 +11,10 @@ import {
 import {  utcToZonedTime } from "date-fns-tz";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { Publicacion } from "../components/Publicacion";
 import ModalMap from "../containers/ModalMapContainer";
 
-import { readUserData } from "../firebase/database";
-import { PublicacionFinal, Usuario } from "../interfaces/products.interface";
 import { ErrorComp } from "../components/Error";
 import { Carga } from "../components/Carga";
 import useUser from "../hooks/useUser";
