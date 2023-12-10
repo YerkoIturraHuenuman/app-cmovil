@@ -10,6 +10,7 @@ import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../views/AuthScreen";
 import Pruebas from "../views/Pruebas";
+
 import RegistroAvatar from "../views/RegistroAvatar";
 
 export function LogoTitle() {
@@ -34,13 +35,6 @@ export default function StackNavigator() {
           headerTransparent: true,
         }}
       >
-        {/*<Stack.Screen
-          name="Pruebas"
-          component={Pruebas}
-          options={{
-            headerTitle: "",
-          }}
-        />*/}
         <Stack.Screen
           name="Auth"
           component={AuthScreen}

@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
 import {
   Text,
   View,
   StyleSheet,
-  Image,
   Modal,
-  Alert,
   Pressable,
 } from "react-native";
 
 import MapView, { Marker, Callout } from "react-native-maps";
+import { useUserContext, useVariablesContext } from "../contexts/VariablesContext";
 
-export default function ModalMap({
-  modalVisible,
-  setModalVisible,
-  coords,
-}: any) {
+export default function ModalMap() {
+
+  const {
+    modalVisible,
+    setModalVisible
+   } = useVariablesContext();
+
+   const {
+    coordenadas
+   } = useUserContext();
+
   return (
     <Modal
       animationType="slide"
@@ -33,10 +37,10 @@ export default function ModalMap({
           ></Pressable>
           <MapView
             region={
-              coords
+              coordenadas
                 ? {
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
+                    latitude: coordenadas.latitude,
+                    longitude: coordenadas.longitude,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                   }
@@ -44,11 +48,11 @@ export default function ModalMap({
             }
             style={styles.map}
           >
-            {coords && (
+            {coordenadas && (
               <Marker
                 coordinate={{
-                  latitude: coords.latitude,
-                  longitude: coords.longitude,
+                  latitude: coordenadas.latitude,
+                  longitude: coordenadas.longitude,
                 }}
               >
                 <Callout tooltip style={{}}>

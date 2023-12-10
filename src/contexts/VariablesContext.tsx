@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import { PublicacionFinal } from "../interfaces/products.interface";
 
 const VariablesContext = createContext<any>(undefined);
 const UserContext = createContext<any>(undefined);
@@ -6,6 +7,7 @@ const AuthContext = createContext<any>(undefined);
 
 export const VariablesContextProvider = ({ children }: any) => {
   //....................variablesContext..........................................
+  const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -15,6 +17,7 @@ export const VariablesContextProvider = ({ children }: any) => {
   const [password, setPassword] = useState("");
   const [keyUser, setKeyUser] = useState(undefined);
   const [coordenadas, setCoordenadas] = useState<any>();
+  const [correctData, setCorrectData] = useState(false);
   //...................authContext...........................................
   const [title, setTitle] = useState<string>("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState<string>("Login");
@@ -23,6 +26,8 @@ export const VariablesContextProvider = ({ children }: any) => {
   return (
     <VariablesContext.Provider
       value={{
+        publicaciones,
+        setPublicaciones,
         modalVisible,
         setModalVisible,
         error,
@@ -49,7 +54,9 @@ export const VariablesContextProvider = ({ children }: any) => {
           keyUser,
           setKeyUser,
           coordenadas,
-          setCoordenadas
+          setCoordenadas,
+          correctData,
+          setCorrectData
         }} >
           {children}
         </UserContext.Provider>
