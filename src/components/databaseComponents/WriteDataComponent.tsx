@@ -21,7 +21,7 @@ export const WriteDataComponent = async (object: InterUsuario, op: number) => {
           direccion: object.direccion,
           coordenada: object.coordenadasPublicacion,
           url_img: object.url_img,
-          fechaPublicacion: obtenerFechaActual(),
+          fechaPublicacion: `${obtenerFechaActual()}`,
         },
       },
     };

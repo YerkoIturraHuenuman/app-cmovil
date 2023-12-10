@@ -157,8 +157,10 @@ export const Auth = (props: any) => {
             value={email}
             style={styles.input}
             keyboardType="email-address"
+            textContentType="emailAddress"
             caretHidden={false}
             selectionColor={"#34c400bb"}
+            autoComplete={"email"}
           />
           <TextInput
             placeholder="Ingrese Password"

@@ -74,7 +74,7 @@ export default function Home({ navigation }: any) {
 
   //------------------------PROCESOS--------------------------
   const onRefresh = useCallback(() => {
-    console.log("hola");
+    //console.log("hola");
     setRefreshing(true);
     getUsuarios();
     setRefreshing(false);
@@ -143,17 +143,6 @@ function tiempoTranscurrido(fechaPasada: Date): string {
   const diasTranscurridos = Math.floor(horasTranscurridas / 24);
   const mesesTranscurridos = Math.floor(diasTranscurridos / 30);
   const añosTranscurridos = Math.floor(mesesTranscurridos / 12);
-  console.log("viendo los fechaPasada: ", fechaPasada);
-
-  console.log("viendo los fechaPasada.getTime(): ", fechaPasada.getTime());
-
-  console.log(
-    "viendo los fechaActualChilena.getTime(): ",
-    fechaActualChilena.getTime()
-  );
-
-  console.log("viendo los diferenciaMillis: ", diferenciaMillis);
-  console.log("viendo los segundosTranscurridos: ", segundosTranscurridos);
   if (segundosTranscurridos < 60) {
     return "Hace un momento";
   } else if (minutosTranscurridos === 1) {
