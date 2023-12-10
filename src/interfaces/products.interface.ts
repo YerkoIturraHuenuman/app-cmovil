@@ -1,10 +1,12 @@
 export interface InterUsuario {
-  userID: string | null;
-  userEmail: string | null;
-  PublicacionID: string | null;
-  direccion: string | null;
-  coordenadasPublicacion: object | null | undefined;
-  url_img: string | unknown;
+  userID?: string | null;
+  userEmail?: string | null;
+  PublicacionID?: string | null;
+  direccion?: string | null;
+  coordenadasPublicacion?: object | null | undefined;
+  url_img?: string | unknown;
+  registroCompleto?: boolean;
+  id_avatar?: number;
 }
 export interface RespuestaLogin {
   res: boolean;
@@ -17,6 +19,8 @@ export interface InterDataImg {
 }
 export interface Usuario {
   email: string;
+  registroCompleto: boolean;
+  id_avatar?: number;
   publicaciones?: Publicacion;
 }
 
@@ -32,9 +36,11 @@ export interface Publicacion {
   };
   direccion: string;
   url_img: string;
+  fechaPublicacion: Date;
 }
 
 export interface PublicacionFinal {
+  id_avatar: number;
   email: string;
   direccion: string;
   coordenadas: {
@@ -47,4 +53,5 @@ export interface PublicacionFinal {
     speed: number;
   };
   url_image: string;
+  tiempoTranscurrido: string;
 }

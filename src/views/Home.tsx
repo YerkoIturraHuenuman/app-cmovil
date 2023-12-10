@@ -1,4 +1,4 @@
-import React, { useEffect, createContext, useContext, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
 import {
@@ -8,7 +8,10 @@ import {
   Dimensions,
   ScrollView,
   Text,
+  RefreshControl,
 } from "react-native";
+import { format, utcToZonedTime } from "date-fns-tz";
+
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { Publicacion } from "../components/Publicacion";
@@ -29,6 +32,7 @@ export default function Home({ navigation }: any) {
   const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
   const getUsuarios = async () => {
@@ -38,56 +42,78 @@ export default function Home({ navigation }: any) {
       if (res) {
         const usuariosConPublicaciones = Object.values(res).filter(
           (usuario: Usuario) => {
-            console.log(usuario);
             return usuario.publicaciones;
           }
         );
+        //console.log("usuariosConPublicaciones: ", usuariosConPublicaciones);
         let resultado: PublicacionFinal[] = [];
         usuariosConPublicaciones.forEach((usuario: any) => {
           Object.values(usuario.publicaciones).forEach((publicacion: any) => {
+            //console.log("publicaciones: ", publicacion);
             resultado.push({
+              id_avatar: usuario.id_avatar,
               email: usuario.email,
               direccion: publicacion.direccion,
               coordenadas: publicacion.coordenada,
               url_image: publicacion.url_img,
+              tiempoTranscurrido: tiempoTranscurrido(
+                new Date(publicacion.fechaPublicacion)
+              ),
             });
           });
         });
+        //console.log("resultado: ", resultado);
         setPublicaciones(resultado);
       }
       setLoading(false);
     } catch (error) {
-      setError(true);
+      console.error(error);
+      setError(false);
     }
   };
+
   //------------------------PROCESOS--------------------------
+  const onRefresh = useCallback(() => {
+    //console.log("hola");
+    setRefreshing(true);
+    getUsuarios();
+    setRefreshing(false);
+  }, []);
   useEffect(
     () =>
       navigation.addListener("focus", () => {
         console.log(
-          "==================================================================================================================================================================="
+          "=========================================================================================="
         );
         getUsuarios();
       }),
-    [navigation]
+    []
   );
   if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
   else if (loading) return <Carga />;
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {publicaciones.map((publicacion: any, index: number) => (
-            <Publicacion
-              key={index}
-              userName={publicacion.email}
-              address={publicacion.direccion}
-              coords={publicacion.coordenadas}
-              setCoordenadas={setCoordenadas}
-              imagePost={publicacion.url_image}
-              setModalVisible={setModalVisible}
-            />
-          ))}
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {publicaciones.map((publicacion: any, index: number) => (
+              <Publicacion
+                key={index}
+                IDAvatar={publicacion.id_avatar}
+                userName={publicacion.email}
+                address={publicacion.direccion}
+                imagePost={publicacion.url_image}
+                coords={publicacion.coordenadas}
+                tiempoTranscurrido={publicacion.tiempoTranscurrido}
+                setCoordenadas={setCoordenadas}
+                setModalVisible={setModalVisible}
+              />
+            ))}
+          </ScrollView>
         </ScrollView>
       </View>
       <View style={styles.contenedorBotonesPrincipales}>
@@ -106,7 +132,41 @@ export default function Home({ navigation }: any) {
     </View>
   );
 }
+function tiempoTranscurrido(fechaPasada: Date): string {
+  const fechaActual = new Date();
+  const fechaActualChilena = utcToZonedTime(fechaActual, "America/Santiago");
 
+  const diferenciaMillis = fechaActualChilena.getTime() - fechaPasada.getTime();
+  const segundosTranscurridos = Math.floor(diferenciaMillis / 1000);
+  const minutosTranscurridos = Math.floor(segundosTranscurridos / 60);
+  const horasTranscurridas = Math.floor(minutosTranscurridos / 60);
+  const diasTranscurridos = Math.floor(horasTranscurridas / 24);
+  const mesesTranscurridos = Math.floor(diasTranscurridos / 30);
+  const añosTranscurridos = Math.floor(mesesTranscurridos / 12);
+  if (segundosTranscurridos < 60) {
+    return "Hace un momento";
+  } else if (minutosTranscurridos === 1) {
+    return "Hace 1 minuto";
+  } else if (minutosTranscurridos < 60) {
+    return `Hace ${minutosTranscurridos} minutos`;
+  } else if (horasTranscurridas === 1) {
+    return "Hace 1 hora";
+  } else if (horasTranscurridas < 24) {
+    return `Hace ${horasTranscurridas} horas`;
+  } else if (diasTranscurridos === 1) {
+    return "Hace 1 día";
+  } else if (diasTranscurridos < 30) {
+    return `Hace ${diasTranscurridos} días`;
+  } else if (mesesTranscurridos === 1) {
+    return "Hace 1 mes";
+  } else if (mesesTranscurridos < 12) {
+    return `Hace ${mesesTranscurridos} meses`;
+  } else if (añosTranscurridos === 1) {
+    return "Hace 1 año";
+  } else {
+    return `Hace ${añosTranscurridos} años`;
+  }
+}
 const styles = StyleSheet.create({
   body: {
     backgroundColor: "#ffffff",

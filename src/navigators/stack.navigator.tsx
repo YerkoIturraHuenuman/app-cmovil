@@ -9,6 +9,8 @@ import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../views/AuthScreen";
+import Pruebas from "../views/Pruebas";
+import RegistroAvatar from "../views/RegistroAvatar";
 
 export function LogoTitle() {
   return (
@@ -32,6 +34,13 @@ export default function StackNavigator() {
           headerTransparent: true,
         }}
       >
+        {/*<Stack.Screen
+          name="Pruebas"
+          component={Pruebas}
+          options={{
+            headerTitle: "",
+          }}
+        />*/}
         <Stack.Screen
           name="Auth"
           component={AuthScreen}
@@ -39,7 +48,18 @@ export default function StackNavigator() {
             headerTitle: "",
           }}
         />
-
+        <Stack.Screen
+          name="RegistroAvatar"
+          component={RegistroAvatar}
+          options={{
+            headerTitle: "",
+            headerLeft: () => (
+              <Pressable onPress={() => navigation.goBack()}>
+                <FontAwesomeIcon icon={faChevronLeft} size={25} color="#fff" />
+              </Pressable>
+            ),
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={Home}

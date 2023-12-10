@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
 } from "react-native";
+
 import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
 import { writeData } from "../firebase/storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -107,6 +108,7 @@ export default function PrePost({ navigation }: any) {
     );
   }
 }
+
 const styles = StyleSheet.create({
   contenedorPrincipal: {
     paddingTop: 120,
