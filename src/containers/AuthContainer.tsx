@@ -9,7 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
-import { logIn, signIn } from "../firebase/auth";
+import { logIn, signIn, logOut } from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -20,6 +20,7 @@ import {
 } from "../interfaces/products.interface";
 import { useVariablesContext } from "../contexts/VariablesContext";
 import { getUser } from "../firebase/database";
+import { auth } from "../firebase/firebaseConfig";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {

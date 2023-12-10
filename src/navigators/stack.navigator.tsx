@@ -1,9 +1,9 @@
 import React from "react";
-import { Image, View, StyleSheet, Pressable } from "react-native";
+import { Image, View, StyleSheet, Pressable, Touchable } from "react-native";
 const Stack = createNativeStackNavigator();
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
@@ -12,6 +12,11 @@ import AuthScreen from "../views/AuthScreen";
 import { VariablesContextProvider } from "../contexts/VariablesContext";
 import Pruebas from "../views/Pruebas";
 import RegistroAvatar from "../views/RegistroAvatar";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { FlipInEasyX } from "react-native-reanimated";
+import { Auth } from "../containers/AuthContainer";
+import { logOut } from "../firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
 
 export function LogoTitle() {
   return (
@@ -28,6 +33,12 @@ export function LogoTitle() {
 
 export default function StackNavigator() {
   const navigation = useNavigation();
+
+  //TODO: arreglar
+  const handleSignOut = async () => {
+    auth.signOut()
+    navigation.goBack()
+  }
 
   return (
     <VariablesContextProvider>
@@ -75,11 +86,14 @@ export default function StackNavigator() {
                   width: "100%",
                   backgroundColor: "transparent",
                   flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
                 }}
               >
-                <LogoTitle />
+                <Pressable style={{ flex: 1, justifyContent: "flex-start", paddingLeft: 10, paddingTop: 10}} onPress={handleSignOut}>
+                  <FontAwesomeIcon icon={faSignOut} size={25} color="#5bee00" transform={{flipX: true}}/>
+                </Pressable>
+                <View style={{ alignItems: 'center' }}>
+                  <LogoTitle />
+                </View>
               </View>
             ),
             gestureEnabled: false, // Deshabilita los gestos
