@@ -20,6 +20,7 @@ import {
   Usuario,
 } from "../interfaces/products.interface";
 import { getUser } from "../firebase/database";
+import useAuth from "../hooks/useAuth";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
@@ -47,10 +48,15 @@ export const Auth = (props: any) => {
     setEmail,
     password,
     setPassword,
-    setKeyUser
    } = useUserContext();
+
+   const {
+    handlerLogin,
+    handlerRegister,
+    handlerLoginGoogle
+   } = useAuth(props)
    
-  const [correctData, setCorrectData] = useState(false);
+ 
   const animation = useRef(new Animated.Value(0)).current;
   const translateY = animation.interpolate({
     inputRange: [0, 0.5, 1],
@@ -62,74 +68,7 @@ export const Auth = (props: any) => {
     outputRange: [1, 0, 1],
   });
   //--------------------------------------PROCEDIMIENTOS--------------------------------------
-  const handlerRegister = async () => {
-    setLoading(true);
-    setError(undefined);
-    setMensaje(undefined);
-
-    const user = await signIn(email, password);
-    console.log("Datos del registro: ", user);
-    if (user) {
-      const objectUser: InterUsuario = {
-        userID: user.uid,
-        userEmail: user.email,
-        PublicacionID: null,
-        direccion: null,
-        coordenadasPublicacion: null,
-        url_img: null,
-        registroCompleto: false,
-      };
-
-      WriteDataComponent(objectUser, 1);
-      setLoading(false);
-      setTitle("Inicio Sesión");
-      setTitleBoton("Login");
-      setMensaje("Usuario creado, inicia sesión");
-      setToggle(!toggle);
-    } else {
-      setError("Usuario ya está registrado!");
-      setLoading(false);
-    }
-  };
-  const handlerLogin = async () => {
-    setLoading(true);
-    setError(undefined);
-    setMensaje(undefined);
-
-    const successLogin = await logIn(email, password);
-    if (successLogin.res) {
-      console.log("id de login: ", successLogin.userID);
-      setKeyUser(successLogin.userID);
-      setLoading(false);
-      const user = (await getUser(successLogin.userID)) as Usuario;
-      console.log(
-        "Usuario: ",
-        user.email,
-        "Registro Completo: ",
-        user.registroCompleto
-      );
-      if (!user.registroCompleto) {
-        props.navigation.navigate("RegistroAvatar");
-      } else if (user.registroCompleto) {
-        props.navigation.navigate("Home");
-        props.navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      }
-    } else {
-      setError("Usuario no registrado!");
-      setLoading(false);
-    }
-  };
-  const handlerLoginGoogle = () => {};
-  useEffect(() => {
-    if (email !== "" && password !== "") {
-      setCorrectData(false);
-    } else {
-      setCorrectData(true);
-    }
-  }, [email, password]);
+  
 
   useEffect(() => {
     Animated.sequence([

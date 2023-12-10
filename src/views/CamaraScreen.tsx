@@ -6,17 +6,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faBolt, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { useVariablesContext } from "../contexts/VariablesContext";
 export default function CamaraScreen({ navigation }: any) {
+
+  const { 
+    loading,
+    setLoading
+   } = useVariablesContext();
+
   //------------------------SET GENERALES--------------------------
-  const [modalVisible, setModalVisible] = useState(false);
   const [type, setType] = useState(CameraType.back);
   const [flash, setFlash] = useState(FlashMode.off);
   let camaraRef = useRef<any>(null);
-  const [image, setImage] = useState(null);
   const [address, setAdress] = useState<any>(null);
   const [location, setLocation] = useState<any>(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
   //------------------------FUNCIONES PRINCIPALES--------------------------
 

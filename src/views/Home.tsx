@@ -27,7 +27,9 @@ import { Carga } from "../components/Carga";
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const { 
+  const {
+    publicaciones,
+    setPublicaciones,
     modalVisible, 
     setModalVisible, 
     error,
@@ -41,7 +43,6 @@ export default function Home({ navigation }: any) {
     setCoordenadas
   } = useUserContext();
 
-  const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
