@@ -9,7 +9,6 @@ import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../views/AuthScreen";
-import { VariablesContextProvider } from "../contexts/VariablesContext";
 
 export function LogoTitle() {
   return (
@@ -28,7 +27,6 @@ export default function StackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <VariablesContextProvider>
       <Stack.Navigator
         screenOptions={{
           headerTransparent: true,
@@ -98,7 +96,6 @@ export default function StackNavigator() {
           }}
         />
       </Stack.Navigator>
-    </VariablesContextProvider>
   );
 }
 const styles = StyleSheet.create({

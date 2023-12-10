@@ -14,23 +14,39 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { InterUsuario, RespuestaLogin } from "../interfaces/products.interface";
-import { useVariablesContext } from "../contexts/VariablesContext";
+import { useAuthContext, useUserContext, useVariablesContext } from "../contexts/VariablesContext";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
-  //--------------------------------------SET GENERALES--------------------------------------
-  const { setKeyUser } = useVariablesContext();
 
-  const [title, setTitle] = useState("Inicio Sesión");
-  const [titleBoton, setTitleBoton] = useState("Login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { 
+    loading,
+    setLoading,
+    error,
+    setError,
+    toggle,
+    setToggle
+   } = useVariablesContext();
+
+  const {
+    setMensaje,
+    mensaje,
+    setTitle,
+    title,
+    setTitleBoton,
+    titleBoton 
+   } = useAuthContext();
+
+  const { 
+    email,
+    setEmail,
+    password,
+    setPassword,
+    setKeyUser
+   } = useUserContext();
+   
   const [correctData, setCorrectData] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [mensaje, setMensaje] = useState<string | undefined>(undefined);
   const animation = useRef(new Animated.Value(0)).current;
-  const [toggle, setToggle] = useState(false);
   const translateY = animation.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [0, 20, 0],
