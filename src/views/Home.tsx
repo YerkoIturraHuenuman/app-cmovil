@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
+import { useUserContext, useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
 import {
   View,
@@ -27,11 +27,21 @@ import { Carga } from "../components/Carga";
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const { modalVisible, setModalVisible, coordenadas, setCoordenadas } =
-    useVariablesContext();
+  const { 
+    modalVisible, 
+    setModalVisible, 
+    error,
+    setError,
+    loading,
+    setLoading
+  } = useVariablesContext();
+
+  const {
+    coordenadas, 
+    setCoordenadas
+  } = useUserContext();
+
   const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   //------------------------FUNCIONES PRINCIPALES--------------------------
