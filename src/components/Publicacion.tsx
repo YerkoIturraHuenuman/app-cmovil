@@ -25,6 +25,10 @@ export const Publicacion = ({
   const avatars: any = {
     avatar1: require("../../assets/bass/avatar1.jpg"),
     avatar2: require("../../assets/bass/avatar2.jpg"),
+    avatar3: require("../../assets/bass/avatar3.jpg"),
+    avatar4: require("../../assets/bass/avatar4.jpg"),
+    avatar5: require("../../assets/bass/avatar5.jpg"),
+    avatar6: require("../../assets/bass/avatar6.jpg"),
     // ... otros avatares ...
   };
   //

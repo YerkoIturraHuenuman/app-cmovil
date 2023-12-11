@@ -52,6 +52,7 @@ export default function RegistroAvatar({ navigation }: any) {
               maxWidth: 390,
               flexWrap: "wrap",
               alignItems: "center",
+              justifyContent: "center",
               marginVertical: 40,
             }}
           >
@@ -78,6 +79,58 @@ export default function RegistroAvatar({ navigation }: any) {
             >
               <Image
                 source={require("../../assets/bass/avatar2.jpg")}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectionAvatar(3)}
+              style={
+                selectionAvatar == 3
+                  ? styles.borderSelection
+                  : styles.borderDisabled
+              }
+            >
+              <Image
+                source={require("../../assets/bass/avatar3.jpg")}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectionAvatar(4)}
+              style={
+                selectionAvatar == 4
+                  ? styles.borderSelection
+                  : styles.borderDisabled
+              }
+            >
+              <Image
+                source={require("../../assets/bass/avatar4.jpg")}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectionAvatar(5)}
+              style={
+                selectionAvatar == 5
+                  ? styles.borderSelection
+                  : styles.borderDisabled
+              }
+            >
+              <Image
+                source={require("../../assets/bass/avatar5.jpg")}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectionAvatar(6)}
+              style={
+                selectionAvatar == 6
+                  ? styles.borderSelection
+                  : styles.borderDisabled
+              }
+            >
+              <Image
+                source={require("../../assets/bass/avatar6.jpg")}
                 style={styles.avatar}
               />
             </TouchableOpacity>
