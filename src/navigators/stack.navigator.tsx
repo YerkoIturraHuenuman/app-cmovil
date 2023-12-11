@@ -32,12 +32,8 @@ export function LogoTitle() {
 }
 
 export default function StackNavigator(props: any) {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
 
-  type RootStackParamList = {
-    Auth: undefined;
-    // Agrega aquí otras rutas si las tienes
-  };
   const handleSignOut = () => {
     console.log("handleSignOut", auth);
     signOut(auth)

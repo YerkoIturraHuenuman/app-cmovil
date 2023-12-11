@@ -20,6 +20,8 @@ export default function RegistroAvatar({ navigation }: any) {
   const { keyUser } = useVariablesContext();
   const [selectionAvatar, setSelectionAvatar] = useState(0);
   //------------------------FUNCIONES PRINCIPALES--------------------------
+  console.log("key en avatar: ", keyUser);
+
   const registrarAvatar = async () => {
     try {
       await WriteDataComponent(

@@ -35,29 +35,35 @@ export const VariablesContextProvider = ({ children }: any) => {
         loading,
         setLoading,
         toggle,
-        setToggle
+        setToggle,
+        keyUser,
+        setKeyUser,
       }}
     >
-      <AuthContext.Provider value={{
-        title,
-        setTitle,
-        titleBoton,
-        setTitleBoton,
-        mensaje,
-        setMensaje
-      }}>
-        <UserContext.Provider value={{
-          email,
-          setEmail,
-          password,
-          setPassword,
-          keyUser,
-          setKeyUser,
-          coordenadas,
-          setCoordenadas,
-          correctData,
-          setCorrectData
-        }} >
+      <AuthContext.Provider
+        value={{
+          title,
+          setTitle,
+          titleBoton,
+          setTitleBoton,
+          mensaje,
+          setMensaje,
+        }}
+      >
+        <UserContext.Provider
+          value={{
+            email,
+            setEmail,
+            password,
+            setPassword,
+            keyUser,
+            setKeyUser,
+            coordenadas,
+            setCoordenadas,
+            correctData,
+            setCorrectData,
+          }}
+        >
           {children}
         </UserContext.Provider>
       </AuthContext.Provider>
