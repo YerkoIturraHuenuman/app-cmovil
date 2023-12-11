@@ -17,46 +17,30 @@ import {
   RespuestaLogin,
   Usuario,
 } from "../interfaces/products.interface";
-import { useAuthContext, useUserContext, useVariablesContext } from "../contexts/VariablesContext";
+import {
+  useAuthContext,
+  useUserContext,
+  useVariablesContext,
+} from "../contexts/VariablesContext";
 import { getUser } from "../firebase/database";
 import { auth } from "../firebase/firebaseConfig";
+import useAuth from "../hooks/useAuth";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
-
   //---------------------Recupera variables globales de contexto-------------------
 
-  const { 
-    loading,
-    error,
-    setError,
-    toggle,
-    setToggle
-   } = useVariablesContext();
+  const { loading, error, setError, toggle, setToggle } = useVariablesContext();
 
-  const {
-    mensaje,
-    setTitle,
-    title,
-    setTitleBoton,
-    titleBoton 
-   } = useAuthContext();
+  const { mensaje, setTitle, title, setTitleBoton, titleBoton } =
+    useAuthContext();
 
-  const { 
-    email,
-    setEmail,
-    password,
-    setPassword,
-   } = useUserContext();
+  const { email, setEmail, password, setPassword } = useUserContext();
 
-   //--------------------------------Custom hook auth----------------------------------------
-   const {
-    handlerLogin,
-    handlerRegister,
-    handlerLoginGoogle
-  } = useAuth(props)
-   
- //------------------------------------------------------------------------------------------
+  //--------------------------------Custom hook auth----------------------------------------
+  const { handlerLogin, handlerRegister, handlerLoginGoogle } = useAuth(props);
+
+  //------------------------------------------------------------------------------------------
   const animation = useRef(new Animated.Value(0)).current;
   const translateY = animation.interpolate({
     inputRange: [0, 0.5, 1],
