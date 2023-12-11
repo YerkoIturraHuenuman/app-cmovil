@@ -9,8 +9,8 @@ import CamaraScreen from "../views/CamaraScreen";
 import PrePost from "../views/PrePost";
 import Home from "../views/Home";
 import AuthScreen from "../views/AuthScreen";
-import { VariablesContextProvider } from "../contexts/VariablesContext";
 import Pruebas from "../views/Pruebas";
+
 import RegistroAvatar from "../views/RegistroAvatar";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { FlipInEasyX } from "react-native-reanimated";
@@ -48,19 +48,11 @@ export default function StackNavigator(props: any) {
   }
 
   return (
-    <VariablesContextProvider>
       <Stack.Navigator
         screenOptions={{
           headerTransparent: true,
         }}
       >
-        {/*<Stack.Screen
-          name="Pruebas"
-          component={Pruebas}
-          options={{
-            headerTitle: "",
-          }}
-        />*/}
         <Stack.Screen
           name="Auth"
           component={AuthScreen}
@@ -139,7 +131,6 @@ export default function StackNavigator(props: any) {
           }}
         />
       </Stack.Navigator>
-    </VariablesContextProvider>
   );
 }
 const styles = StyleSheet.create({

@@ -1,80 +1,49 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
+import { useUserContext, useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
 import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   ScrollView,
-  Text,
   RefreshControl,
 } from "react-native";
-import { format, utcToZonedTime } from "date-fns-tz";
+import {  utcToZonedTime } from "date-fns-tz";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCirclePlus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { Publicacion } from "../components/Publicacion";
 import ModalMap from "../containers/ModalMapContainer";
 
-import { ReadDataComponent } from "../components/databaseComponents/ReadDataComponent";
-import { readUserData } from "../firebase/database";
-import { PublicacionFinal, Usuario } from "../interfaces/products.interface";
 import { ErrorComp } from "../components/Error";
 import { Carga } from "../components/Carga";
+import useUser from "../hooks/useUser";
 
-//--------------------------------------------------------------------------------------
 
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const { modalVisible, setModalVisible, coordenadas, setCoordenadas } =
-    useVariablesContext();
-  const [publicaciones, setPublicaciones] = useState<PublicacionFinal[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const {
+    publicaciones,
+    setModalVisible, 
+    error,
+    loading
+  } = useVariablesContext();
+
+  const {
+    setCoordenadas
+  } = useUserContext();
+
+  const {
+    getUsuarios
+  } = useUser();
+
   const [refreshing, setRefreshing] = useState(false);
 
-  //------------------------FUNCIONES PRINCIPALES--------------------------
-  const getUsuarios = async () => {
-    setLoading(true);
-    try {
-      const res = (await readUserData()) as Usuario;
-      if (res) {
-        const usuariosConPublicaciones = Object.values(res).filter(
-          (usuario: Usuario) => {
-            return usuario.publicaciones;
-          }
-        );
-        //console.log("usuariosConPublicaciones: ", usuariosConPublicaciones);
-        let resultado: PublicacionFinal[] = [];
-        usuariosConPublicaciones.forEach((usuario: any) => {
-          Object.values(usuario.publicaciones).forEach((publicacion: any) => {
-            //console.log("publicaciones: ", publicacion);
-            resultado.push({
-              id_avatar: usuario.id_avatar,
-              email: usuario.email,
-              direccion: publicacion.direccion,
-              coordenadas: publicacion.coordenada,
-              url_image: publicacion.url_img,
-              tiempoTranscurrido: tiempoTranscurrido(
-                new Date(publicacion.fechaPublicacion)
-              ),
-            });
-          });
-        });
-        //console.log("resultado: ", resultado);
-        setPublicaciones(resultado);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setError(false);
-    }
-  };
+  
 
   //------------------------PROCESOS--------------------------
   const onRefresh = useCallback(() => {
-    console.log("hola");
+    //console.log("hola");
     setRefreshing(true);
     getUsuarios();
     setRefreshing(false);
@@ -91,6 +60,7 @@ export default function Home({ navigation }: any) {
   );
   if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
   else if (loading) return <Carga />;
+
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
@@ -124,15 +94,12 @@ export default function Home({ navigation }: any) {
           <FontAwesomeIcon icon={faCirclePlus} size={60} color="#5bee00" />
         </TouchableOpacity>
       </View>
-      <ModalMap
-        coords={coordenadas}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
+      <ModalMap />
     </View>
   );
 }
-function tiempoTranscurrido(fechaPasada: Date): string {
+
+export function tiempoTranscurrido(fechaPasada: Date): string {
   const fechaActual = new Date();
   const fechaActualChilena = utcToZonedTime(fechaActual, "America/Santiago");
 
@@ -143,17 +110,7 @@ function tiempoTranscurrido(fechaPasada: Date): string {
   const diasTranscurridos = Math.floor(horasTranscurridas / 24);
   const mesesTranscurridos = Math.floor(diasTranscurridos / 30);
   const añosTranscurridos = Math.floor(mesesTranscurridos / 12);
-  console.log("viendo los fechaPasada: ", fechaPasada);
 
-  console.log("viendo los fechaPasada.getTime(): ", fechaPasada.getTime());
-
-  console.log(
-    "viendo los fechaActualChilena.getTime(): ",
-    fechaActualChilena.getTime()
-  );
-
-  console.log("viendo los diferenciaMillis: ", diferenciaMillis);
-  console.log("viendo los segundosTranscurridos: ", segundosTranscurridos);
   if (segundosTranscurridos < 60) {
     return "Hace un momento";
   } else if (minutosTranscurridos === 1) {
@@ -178,6 +135,7 @@ function tiempoTranscurrido(fechaPasada: Date): string {
     return `Hace ${añosTranscurridos} años`;
   }
 }
+
 const styles = StyleSheet.create({
   body: {
     backgroundColor: "#ffffff",

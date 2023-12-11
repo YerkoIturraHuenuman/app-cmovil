@@ -4,20 +4,25 @@ import * as Location from "expo-location";
 import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
-import { faBolt, faRotate } from "@fortawesome/free-solid-svg-icons";
-import { useFocusEffect } from "@react-navigation/native";
+import { useVariablesContext } from "../contexts/VariablesContext";
 export default function CamaraScreen({ navigation }: any) {
+
+  const { 
+    loading,
+    setLoading
+   } = useVariablesContext();
+
   //------------------------SET GENERALES--------------------------
-  const [modalVisible, setModalVisible] = useState(false);
   const [type, setType] = useState(CameraType.back);
   const [flash, setFlash] = useState(FlashMode.off);
   let camaraRef = useRef<any>(null);
-  const [image, setImage] = useState(null);
   const [address, setAdress] = useState<any>(null);
   const [location, setLocation] = useState<any>(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [statusLocation, requestPermissionLocation] =
+    Location.useForegroundPermissions();
+
   //------------------------FUNCIONES PRINCIPALES--------------------------
 
   //------------------------PROCESOS--------------------------
@@ -38,12 +43,7 @@ export default function CamaraScreen({ navigation }: any) {
     }
   };
   const tomandoLocalizacion = async () => {
-    console.log("Tomando localizacion...");
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("!granted");
-      return;
-    }
+    //console.log("Permisos location: ", statusLocation);
     let coordenadas: Location.LocationObject;
     let address: any;
     try {
@@ -66,13 +66,14 @@ export default function CamaraScreen({ navigation }: any) {
     }
   };
   useEffect(() => {
-    (async () => {
-      await tomandoLocalizacion();
-      recargaCam();
-      setLoading(false);
-    })();
+    recargaCam();
+    setLoading(false);
   }, []);
-
+  useEffect(() => {
+    (async () => {
+      if (statusLocation) await tomandoLocalizacion();
+    })();
+  }, [statusLocation]);
   if (!permission?.granted) {
     return (
       <View
@@ -85,9 +86,15 @@ export default function CamaraScreen({ navigation }: any) {
         }}
       >
         <Text style={{ textAlign: "center", marginBottom: 10, color: "#fff" }}>
-          Se necesitan permisos para acceder a la camara
+          Se necesitan permisos para acceder a la camara y su locación
         </Text>
-        <Button onPress={requestPermission} title="Dar Permisos" />
+        <Button
+          onPress={() => {
+            requestPermission();
+            requestPermissionLocation();
+          }}
+          title="Dar Permisos"
+        />
       </View>
     );
   } else if (loading) {

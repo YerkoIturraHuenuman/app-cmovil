@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
 import {
-  Button,
   TouchableOpacity,
   Text,
   View,
   StyleSheet,
   Image,
 } from "react-native";
-import * as Location from "expo-location";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";

@@ -8,8 +8,7 @@ import {
   ImageBackground,
   Animated,
 } from "react-native";
-import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
-import { logIn, signIn} from "../firebase/auth";
+
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -18,25 +17,47 @@ import {
   RespuestaLogin,
   Usuario,
 } from "../interfaces/products.interface";
-import { useVariablesContext } from "../contexts/VariablesContext";
+import { useAuthContext, useUserContext, useVariablesContext } from "../contexts/VariablesContext";
 import { getUser } from "../firebase/database";
 import { auth } from "../firebase/firebaseConfig";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
-  //--------------------------------------SET GENERALES--------------------------------------
-  const { setKeyUser } = useVariablesContext();
 
-  const [title, setTitle] = useState("Inicio Sesión");
-  const [titleBoton, setTitleBoton] = useState("Login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [correctData, setCorrectData] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [mensaje, setMensaje] = useState<string | undefined>(undefined);
+  //---------------------Recupera variables globales de contexto-------------------
+
+  const { 
+    loading,
+    error,
+    setError,
+    toggle,
+    setToggle
+   } = useVariablesContext();
+
+  const {
+    mensaje,
+    setTitle,
+    title,
+    setTitleBoton,
+    titleBoton 
+   } = useAuthContext();
+
+  const { 
+    email,
+    setEmail,
+    password,
+    setPassword,
+   } = useUserContext();
+
+   //--------------------------------Custom hook auth----------------------------------------
+   const {
+    handlerLogin,
+    handlerRegister,
+    handlerLoginGoogle
+  } = useAuth(props)
+   
+ //------------------------------------------------------------------------------------------
   const animation = useRef(new Animated.Value(0)).current;
-  const [toggle, setToggle] = useState(false);
   const translateY = animation.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [0, 20, 0],
@@ -46,76 +67,8 @@ export const Auth = (props: any) => {
     inputRange: [0, 0.5, 1],
     outputRange: [1, 0, 1],
   });
+
   //--------------------------------------PROCEDIMIENTOS--------------------------------------
-  const handlerRegister = async () => {
-    setLoading(true);
-    setError(undefined);
-    setMensaje(undefined);
-
-    const user = await signIn(email, password);
-    console.log("Datos del registro: ", user);
-    if (user) {
-      const objectUser: InterUsuario = {
-        userID: user.uid,
-        userEmail: user.email,
-        PublicacionID: null,
-        direccion: null,
-        coordenadasPublicacion: null,
-        url_img: null,
-        registroCompleto: false,
-      };
-
-      WriteDataComponent(objectUser, 1);
-      setLoading(false);
-      setTitle("Inicio Sesión");
-      setTitleBoton("Login");
-      setMensaje("Usuario creado, inicia sesión");
-      setToggle(!toggle);
-    } else {
-      setError("Usuario ya está registrado!");
-      setLoading(false);
-    }
-  };
-  const handlerLogin = async () => {
-    setLoading(true);
-    setError(undefined);
-    setMensaje(undefined);
-
-    const successLogin = await logIn(email, password);
-    if (successLogin.res) {
-      console.log("id de login: ", successLogin.userID);
-      setKeyUser(successLogin.userID);
-      setLoading(false);
-      const user = (await getUser(successLogin.userID)) as Usuario;
-      console.log(
-        "Usuario: ",
-        user.email,
-        "Registro Completo: ",
-        user.registroCompleto
-      );
-      if (!user.registroCompleto) {
-        props.navigation.navigate("RegistroAvatar");
-      } else if (user.registroCompleto) {
-        props.navigation.navigate("Home");
-        props.navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      }
-    } else {
-      setError("Usuario no registrado!");
-      setLoading(false);
-    }
-  };
-  const handlerLoginGoogle = () => {};
-  useEffect(() => {
-    if (email !== "" && password !== "") {
-      setCorrectData(false);
-    } else {
-      setCorrectData(true);
-    }
-  }, [email, password]);
-
   useEffect(() => {
     Animated.sequence([
       Animated.timing(animation, {
@@ -125,7 +78,6 @@ export const Auth = (props: any) => {
       }),
     ]).start();
   }, [toggle]);
-
   //------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
@@ -158,8 +110,10 @@ export const Auth = (props: any) => {
             value={email}
             style={styles.input}
             keyboardType="email-address"
+            textContentType="emailAddress"
             caretHidden={false}
             selectionColor={"#34c400bb"}
+            autoComplete={"email"}
           />
           <TextInput
             placeholder="Ingrese Password"
