@@ -22,6 +22,9 @@ export const VariablesContextProvider = ({ children }: any) => {
   const [title, setTitle] = useState<string>("Inicio Sesión");
   const [titleBoton, setTitleBoton] = useState<string>("Login");
   const [mensaje, setMensaje] = useState<string | undefined>(undefined);
+  const [direccionGlobal, setDireccionGlobal] = useState<string | undefined>(
+    undefined
+  );
 
   return (
     <VariablesContext.Provider
@@ -38,6 +41,8 @@ export const VariablesContextProvider = ({ children }: any) => {
         setToggle,
         keyUser,
         setKeyUser,
+        direccionGlobal,
+        setDireccionGlobal,
       }}
     >
       <AuthContext.Provider

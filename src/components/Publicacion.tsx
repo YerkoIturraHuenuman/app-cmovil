@@ -1,13 +1,8 @@
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { TouchableOpacity, Text, View, StyleSheet, Image } from "react-native";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { useVariablesContext } from "../contexts/VariablesContext";
 
 export const Publicacion = ({
   setModalVisible,
@@ -19,6 +14,8 @@ export const Publicacion = ({
   tiempoTranscurrido,
   IDAvatar,
 }: any) => {
+  const { setDireccionGlobal } = useVariablesContext();
+
   const avatars: any = {
     avatar1: require("../../assets/bass/avatar1.jpg"),
     avatar2: require("../../assets/bass/avatar2.jpg"),
@@ -47,6 +44,7 @@ export const Publicacion = ({
         <TouchableOpacity
           style={styles.botonMapa}
           onPress={() => {
+            setDireccionGlobal(address);
             setCoordenadas(coords);
             setModalVisible(true);
           }}

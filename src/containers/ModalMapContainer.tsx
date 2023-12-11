@@ -1,24 +1,17 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  Pressable,
-} from "react-native";
+import { Text, View, StyleSheet, Modal, Pressable } from "react-native";
 
 import MapView, { Marker, Callout } from "react-native-maps";
-import { useUserContext, useVariablesContext } from "../contexts/VariablesContext";
+import {
+  useUserContext,
+  useVariablesContext,
+} from "../contexts/VariablesContext";
 
 export default function ModalMap() {
+  const { direccionGlobal } = useVariablesContext();
 
-  const {
-    modalVisible,
-    setModalVisible
-   } = useVariablesContext();
+  const { modalVisible, setModalVisible } = useVariablesContext();
 
-   const {
-    coordenadas
-   } = useUserContext();
+  const { coordenadas } = useUserContext();
 
   return (
     <Modal
@@ -58,7 +51,7 @@ export default function ModalMap() {
                 <Callout tooltip style={{}}>
                   <View style={{ maxWidth: 300 }}>
                     <View style={styles.popperMarca}>
-                      <Text>asdasd</Text>
+                      <Text>{direccionGlobal}</Text>
                     </View>
                   </View>
                 </Callout>
