@@ -23,7 +23,7 @@ export function LogoTitle() {
     <Image
       style={{
         width: 150,
-        height: 50,
+        height: 40,
         objectFit: "contain",
       }}
       source={require("../../assets/bass/Bass.png")}
@@ -98,7 +98,7 @@ export default function StackNavigator(props: any) {
                 <Pressable style={{ flex: 1, justifyContent: "flex-start", paddingLeft: 10, paddingTop: 10}} onPress={handleSignOut}>
                   <FontAwesomeIcon icon={faSignOut} size={25} color="#5bee00" transform={{flipX: true}}/>
                 </Pressable>
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center',marginBottom: 10}}>
                   <LogoTitle />
                 </View>
               </View>
