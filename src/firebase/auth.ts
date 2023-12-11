@@ -29,4 +29,5 @@ const logIn = async (email: string, password: string) => {
     });
 };
 
+
 export { signIn, logIn };

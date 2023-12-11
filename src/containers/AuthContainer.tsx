@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Animated,
 } from "react-native";
+
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -18,6 +19,7 @@ import {
 } from "../interfaces/products.interface";
 import { useAuthContext, useUserContext, useVariablesContext } from "../contexts/VariablesContext";
 import { getUser } from "../firebase/database";
+import { auth } from "../firebase/firebaseConfig";
 const fondoImage = require("../../assets/bass/fondoInicio.jpg");
 
 export const Auth = (props: any) => {
