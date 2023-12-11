@@ -6,11 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { useVariablesContext } from "../contexts/VariablesContext";
 export default function CamaraScreen({ navigation }: any) {
-
-  const { 
-    loading,
-    setLoading
-   } = useVariablesContext();
+  const { loading, setLoading } = useVariablesContext();
 
   //------------------------SET GENERALES--------------------------
   const [type, setType] = useState(CameraType.back);
@@ -73,7 +69,7 @@ export default function CamaraScreen({ navigation }: any) {
     (async () => {
       if (statusLocation) await tomandoLocalizacion();
     })();
-  }, [statusLocation]);
+  }, [, statusLocation]);
   if (!permission?.granted) {
     return (
       <View
@@ -104,8 +100,7 @@ export default function CamaraScreen({ navigation }: any) {
       </View>
     );
   } else if (!loading) {
-    //console.log("return");
-
+    console.log("presmiso de localizacion: ", statusLocation);
     return (
       <View style={styles.contenedorPrincipal}>
         <Camera

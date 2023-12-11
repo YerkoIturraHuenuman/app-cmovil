@@ -1,5 +1,8 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useUserContext, useVariablesContext } from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
+import {
+  useUserContext,
+  useVariablesContext,
+} from "../contexts/VariablesContext"; // Asegúrate de ajustar la ruta correcta
 
 import {
   View,
@@ -8,7 +11,6 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import {  utcToZonedTime } from "date-fns-tz";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
@@ -19,27 +21,16 @@ import { ErrorComp } from "../components/Error";
 import { Carga } from "../components/Carga";
 import useUser from "../hooks/useUser";
 
-
 export default function Home({ navigation }: any) {
   //------------------------SET GENERALES--------------------------
-  const {
-    publicaciones,
-    setModalVisible, 
-    error,
-    loading
-  } = useVariablesContext();
+  const { publicaciones, setModalVisible, error, loading } =
+    useVariablesContext();
 
-  const {
-    setCoordenadas
-  } = useUserContext();
+  const { setCoordenadas } = useUserContext();
 
-  const {
-    getUsuarios
-  } = useUser();
+  const { getUsuarios } = useUser();
 
   const [refreshing, setRefreshing] = useState(false);
-
-  
 
   //------------------------PROCESOS--------------------------
   const onRefresh = useCallback(() => {
@@ -60,7 +51,6 @@ export default function Home({ navigation }: any) {
   );
   if (error) return <ErrorComp title={"Tuvimos un problema :c"} />;
   else if (loading) return <Carga />;
-
   return (
     <View style={styles.body}>
       <View style={styles.contenedorPrincipal}>
@@ -97,43 +87,6 @@ export default function Home({ navigation }: any) {
       <ModalMap />
     </View>
   );
-}
-
-export function tiempoTranscurrido(fechaPasada: Date): string {
-  const fechaActual = new Date();
-  const fechaActualChilena = utcToZonedTime(fechaActual, "America/Santiago");
-
-  const diferenciaMillis = fechaActualChilena.getTime() - fechaPasada.getTime();
-  const segundosTranscurridos = Math.floor(diferenciaMillis / 1000);
-  const minutosTranscurridos = Math.floor(segundosTranscurridos / 60);
-  const horasTranscurridas = Math.floor(minutosTranscurridos / 60);
-  const diasTranscurridos = Math.floor(horasTranscurridas / 24);
-  const mesesTranscurridos = Math.floor(diasTranscurridos / 30);
-  const añosTranscurridos = Math.floor(mesesTranscurridos / 12);
-
-  if (segundosTranscurridos < 60) {
-    return "Hace un momento";
-  } else if (minutosTranscurridos === 1) {
-    return "Hace 1 minuto";
-  } else if (minutosTranscurridos < 60) {
-    return `Hace ${minutosTranscurridos} minutos`;
-  } else if (horasTranscurridas === 1) {
-    return "Hace 1 hora";
-  } else if (horasTranscurridas < 24) {
-    return `Hace ${horasTranscurridas} horas`;
-  } else if (diasTranscurridos === 1) {
-    return "Hace 1 día";
-  } else if (diasTranscurridos < 30) {
-    return `Hace ${diasTranscurridos} días`;
-  } else if (mesesTranscurridos === 1) {
-    return "Hace 1 mes";
-  } else if (mesesTranscurridos < 12) {
-    return `Hace ${mesesTranscurridos} meses`;
-  } else if (añosTranscurridos === 1) {
-    return "Hace 1 año";
-  } else {
-    return `Hace ${añosTranscurridos} años`;
-  }
 }
 
 const styles = StyleSheet.create({
