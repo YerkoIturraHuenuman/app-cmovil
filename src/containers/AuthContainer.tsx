@@ -9,7 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { WriteDataComponent } from "../components/databaseComponents/WriteDataComponent";
-import { logIn, signIn, logOut } from "../firebase/auth";
+import { logIn, signIn} from "../firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";

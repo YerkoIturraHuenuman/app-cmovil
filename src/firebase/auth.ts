@@ -29,8 +29,5 @@ const logIn = async (email: string, password: string) => {
     });
 };
 
-const logOut =async () => {
-  return auth.signOut
-}
 
-export { signIn, logIn, logOut };
+export { signIn, logIn };

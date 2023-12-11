@@ -15,8 +15,8 @@ import RegistroAvatar from "../views/RegistroAvatar";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { FlipInEasyX } from "react-native-reanimated";
 import { Auth } from "../containers/AuthContainer";
-import { logOut } from "../firebase/auth";
-import { auth } from "../firebase/firebaseConfig";
+import { signOut } from "firebase/auth";
+import { auth, database } from "../firebase/firebaseConfig";
 
 export function LogoTitle() {
   return (
@@ -31,13 +31,20 @@ export function LogoTitle() {
   );
 }
 
-export default function StackNavigator() {
+export default function StackNavigator(props: any) {
   const navigation = useNavigation();
 
-  //TODO: arreglar
-  const handleSignOut = async () => {
-    auth.signOut()
-    navigation.goBack()
+  const handleSignOut = () =>{
+    console.log(auth)
+    signOut(auth).then(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Auth"}],
+      });
+      console.log(auth)
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   return (
